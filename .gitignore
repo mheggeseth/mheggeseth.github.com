@@ -4,6 +4,7 @@
 .gist-cache
 .pygments-cache
 .idea
+.preview-mode
 _deploy
 public
 sass.old

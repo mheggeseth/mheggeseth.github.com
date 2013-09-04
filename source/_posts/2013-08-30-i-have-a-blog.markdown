@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "I Have A Blog"
+title: "I Have A Blog?"
 date: 2013-08-30 19:34
 comments: true
 categories: 

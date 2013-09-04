@@ -56,7 +56,7 @@ aside.sidebar {
   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: $viewport-min-width-medium) {
   .toggle-sidebar {
     outline: none;
     position: absolute; right: -10px; top: 0; bottom: 0;

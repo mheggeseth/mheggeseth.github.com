@@ -52,15 +52,15 @@ body {
     @extend .group;
     padding-left: $pad-min;
     padding-right: $pad-min;
-    @media only screen and (min-width: 480px) {
+    @media only screen and (min-width: $viewport-min-width-narrow) {
       padding-left: $pad-narrow;
       padding-right: $pad-narrow;
     }
-    @media only screen and (min-width: 768px) {
+    @media only screen and (min-width: $viewport-min-width-medium) {
       padding-left: $pad-medium;
       padding-right: $pad-medium;
     }
-    @media only screen and (min-width: 992px) {
+    @media only screen and (min-width: $viewport-min-width-wide) {
       padding-left: $pad-wide;
       padding-right: $pad-wide;
     }
@@ -69,15 +69,15 @@ body {
     @extend .group;
     margin-left: $pad-min;
     margin-right: $pad-min;
-    @media only screen and (min-width: 480px) {
+    @media only screen and (min-width: $viewport-min-width-narrow) {
       margin-left: $pad-narrow;
       margin-right: $pad-narrow;
     }
-    @media only screen and (min-width: 768px) {
+    @media only screen and (min-width: $viewport-min-width-medium) {
       margin-left: $pad-medium;
       margin-right: $pad-medium;
     }
-    @media only screen and (min-width: 992px) {
+    @media only screen and (min-width: $viewport-min-width-wide) {
       margin-left: $pad-wide;
       margin-right: $pad-wide;
     }
@@ -130,7 +130,7 @@ body.sidebar-footer {
 #main, #content, .sidebar {
   @extend .group;
 }
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: $viewport-min-width-medium) {
   body { -webkit-text-size-adjust: auto; }
   body > header { font-size: $header-font-size * 1.2; }
   #main {
@@ -166,7 +166,7 @@ body.sidebar-footer {
   }
 }
 
-@media only screen and (min-width: 992px) {
+@media only screen and (min-width: $viewport-min-width-wide) {
   body > header { font-size: $header-font-size * 1.3; }
   #content { margin-right: $sidebar-width-wide; }
   #content {
@@ -185,7 +185,7 @@ body.sidebar-footer {
 }
 
 @if $indented-lists == false {
-  @media only screen and (min-width: 768px) {
+  @media only screen and (min-width: $viewport-min-width-medium) {
     ul, ol { margin-left: 0; }
   }
 }

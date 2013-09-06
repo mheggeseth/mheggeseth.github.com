@@ -48,6 +48,17 @@ aside.sidebar {
     color: $sidebar-link-color;
     &:hover { color: $sidebar-link-color-hover; }
   }
+
+  .about {
+    .about-name {
+      margin: 0px;
+    }
+
+    [class^="icon-"], [class*=" icon-"] {
+      margin-right: 0.25em;
+      font-size: 1.25em;
+    }
+  }
 }
 .aside-alt-link {
   color: $sidebar-link-color-subdued;

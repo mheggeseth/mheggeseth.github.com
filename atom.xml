@@ -4,7 +4,7 @@
   <title><![CDATA[Just Enough To Be Dangerous]]></title>
   <link href="http://mheggeseth.github.io/atom.xml" rel="self"/>
   <link href="http://mheggeseth.github.io/"/>
-  <updated>2013-09-06T10:43:02-05:00</updated>
+  <updated>2013-09-07T21:55:59-05:00</updated>
   <id>http://mheggeseth.github.io/</id>
   <author>
     <name><![CDATA[Michael Heggeseth]]></name>
@@ -12,5 +12,42 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[I Have A Blog?]]></title>
+    <link href="http://mheggeseth.github.io/blog/2013/09/07/i-have-a-blog/"/>
+    <updated>2013-09-07T19:34:00-05:00</updated>
+    <id>http://mheggeseth.github.io/blog/2013/09/07/i-have-a-blog</id>
+    <content type="html"><![CDATA[<p>Somebody: &ldquo;Hey, look over there. It&rsquo;s a blog.&#8221;<br/>
+Everybody: &#8220;Oooohhhhh!&#8221;<br/>
+Somebody (maybe somebody else): &#8220;A developer blog!&#8221;<br/>
+Everybody (again): &#8220;Wooowwwww!&rdquo;</p>
+
+<p>Notwithstanding the widespread, public fanfare that accompanies the debut of a developer blog, It&rsquo;s my first day and I really don&rsquo;t know what I&rsquo;m doing here. So to get started I went to the font of blogging wisdom, Scott Hanselman, and found <a href="http://www.hanselman.com/blog/YourBlogIsTheEngineOfCommunity.aspx">&ldquo;Your Blog is the Engine of Community&rdquo;</a> which made me feel like<br/>
+<img src="http://mheggeseth.github.io/images/posts/anchorman-excited.jpg"></p>
+
+<p>Then I found <a href="http://kencenerelli.wordpress.com/2012/03/20/personal-branding-for-software-developers/">&ldquo;Personal Branding for Software Developers&rdquo;</a> and it made me feel a little like<br/>
+<img src="http://mheggeseth.github.io/images/posts/bored-dog.jpg"></p>
+
+<p>Building my personal brand? Maybe. I did make a sweet logo in Paint.NET and brought in some snazzy web fonts. <em>Incidentally, <a href="http://www.google.com/fonts">Google Fonts</a> is a great way to waste several hours.</em> Let&rsquo;s stick with the hippy-dippy, free-love blogging advertized by Mr. Hanselman.</p>
+
+<p>My goals for this blog are these:</p>
+
+<ul>
+<li><strong>Be helpful.</strong> While I want this blog to be a container for my passion for software development, I also want what I put out there to be useful to somebody (maybe even somebodies). If I can solve a problem, that means another developer doesn&rsquo;t have to. Everybody wins and it&rsquo;s good karma.</li>
+<li><strong>Get better.</strong> I know some things, but I don&rsquo;t know a lot of things. Aside from the personal and technical growth that will come from the process of preparing my words and bits for all to see, I love collaborating with and learning from people who know more than I do.</li>
+<li><strong>Avoid TL;DR.</strong> No matter how interesting a post is, it&rsquo;s frustrating to read for 10 minutes, only to realize you still have over half-way to go. I pledge to blow your mind, but keep it quick (this post excluded).</li>
+</ul>
+
+
+<p>I hope you read and enjoy what is to come and I encourage your feedback!</p>
+
+<p><small>Thanks to <a href="http://www.knockmeout.net">Ryan Niemeyer</a> for the help in getting this set up.</small></p>
+
+<h4>A Little About Me</h4>
+
+<p>I&rsquo;ve been a software developer for 9 years, doing web development for most of that time. For a number of years I worked on an application using ASP.NET, C#, and SQL Server. Since the emergence of JavaScript in recent years, I&rsquo;ve done a lot more work on that front, especially with <a href="http://jquery.com">jQuery</a> (obvious, right?), <a href="http://knockoutjs.com">KnockoutJS</a>, and even <a href="http://vanilla-js.com/">Vanilla JS</a>. There are many more frameworks and libraries that are interesting to me but for which I have yet to scratch the surface, so I&rsquo;m excited to use this blog as a venue for those adventures.</p>
+]]></content>
+  </entry>
   
 </feed>

@@ -32,3 +32,7 @@ I hope you read and enjoy what is to come and I encourage your feedback!
 #### A Little About Me
 
 I've been a software developer for 9 years, doing web development for most of that time. For a number of years I worked on an application using ASP.NET, C#, and SQL Server. Since the emergence of JavaScript in recent years, I've done a lot more work on that front, especially with [jQuery](http://jquery.com) (obvious, right?), [KnockoutJS](http://knockoutjs.com), and even [Vanilla JS](http://vanilla-js.com/). There are many more frameworks and libraries that are interesting to me, but for which I have yet to scratch the surface, so I'm excited to use this blog as a venue for those adventures.
+
+I'm also lucky to be a husband and father to two special ladies and one furry one.  
+{% img inline /images/posts/kirsten-emma.jpg 350 %}{% img /images/posts/emma-izzy.jpg 350 %}
+

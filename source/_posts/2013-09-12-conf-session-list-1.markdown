@@ -7,7 +7,7 @@ categories:
 published: false
 ---
 
-August 2012 was the inaugural [That Conference](http://thatconference.com). It was an awesome conference (one that I will attend as long as it goes), but one thing bugged me: having just my iPhone, it was a challenge to peruse current and upcoming sessions using the conference's less-than-mobile-friendly website. So before I geared up to attend That Conference 2013, I decided to bring another tool: a responsive sessions list page.
+August 2012 was the inaugural [That Conference](http://thatconference.com). It was an awesome conference (one that I will attend as long as it goes), but having just my iPhone, it was a challenge to peruse upcoming sessions using the conference's less-than-mobile-friendly website. So before I geared up to attend That Conference 2013, I decided to build a mobile-friendly session list page.
 
 ### What I wanted
 
@@ -68,7 +68,7 @@ We'll start with the HTML boilerplate provided by [Bootstrap](http://getbootstra
 
 {% img /images/posts/bootstrap-boilerplate-screenshot.png %}
 
-I've already made one nice customization to the boilerplate, taking advantage of the [responsive utility classes](http://getbootstrap.com/css/#responsive-utilities) that come with Bootstrap. When the browser is narrow (i.e. mobile devices) shorten the header title to save space.
+I've already made one nice customization to the boilerplate, taking advantage of the [responsive utility classes](http://getbootstrap.com/css/#responsive-utilities) that come with Bootstrap. When the browser width is narrow (i.e. mobile devices) shorten the header title to save space. The `visible-xs` class ensures an element will only be visible when the browser width is "extra small". `hidden-xs` ensures an element is always hidden when the browser width is narrow.
 
 ``` html
 ...
@@ -79,5 +79,8 @@ I've already made one nice customization to the boilerplate, taking advantage of
 
 {% img /images/posts/bootstrap-boilerplate-screenshot-xs.png %}
 
-### JSONP, OData, jQuery
+### Get me some sessions (JSONP, OData, & jQuery)
+
+    git checkout -f load-sessions
+
 

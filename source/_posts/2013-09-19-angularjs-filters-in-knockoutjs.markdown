@@ -13,6 +13,6 @@ In addition to the "write once, use everywhere" conveinence of a filter, filters
 
 OK, so Angular is awesome. But what if I've already done a bunch of stuff using another library ([KnockoutJS](http://knockoutjs.com) in my case)? Can I do something like a filter in Knockout? **Hint: yes.**
 
-Knockout has two ways that this could work: [extenders](http://knockoutjs.com/documentation/extenders.html) and [`fn` functions](http://knockoutjs.com/documentation/fn.html). Let's take a look at 
+Knockout has two ways that this could work: [extenders](http://knockoutjs.com/documentation/extenders.html) and ["fn" functions](http://knockoutjs.com/documentation/fn.html). Let's first take a look at "fn" functions. 
 
 {% jsfiddle Mp5jw %}

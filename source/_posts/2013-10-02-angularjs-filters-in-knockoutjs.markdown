@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "AngularJS-ish filters in KnockoutJS"
-date: 2013-09-22 15:00
+date: 2013-10-02 22:00
 comments: true
 categories: 
 published: false
@@ -81,19 +81,42 @@ Ultimately, there's little difference between `fn` and extenders as far as the e
 
 {% jsfiddle ubpS7 js,html,resources,result %}
 
-TODO: EXPLANATION OF EXAMPLE
+In the fiddle above, instead of putting all the filter functions I might want to use into the same bag, they are separated by name.
+
+`arrayExtensions` is used to extend an `observableArray` with the filter functions `filter` and `orderBy`. These functions work exactly the same as in the `fn` example. However, in order to make the `arrayExtensions` methods chainable, I have to return a `subscribable` and extend it with `arrayExtensions`. This could be easy to forget to do when writing your own filter function. Also, this approach to chainability is not a frugal use of memory since two *new* functions are added to the target each time you call `extend({ arrayExtensions })`.
+
+`formatting` is used to extend an `observable` with filter functions that are appropriate to its data type (provided in the extender options). Due to their simplicity, I did not make these filter functions chainable. I suppose they could be, but I couldn't think of a good reason to do that here.
+
+To reiterate, in order to take advantage of these filter functions, I have to call `.extend()` for my `amount`, `date`, and `dudes` observables.
 
 ## Discussion and Gotchas
 
-While it's convenient for all functions you add to `fn` to be available to all subsequent instances of that type, *ALL* functions you add will be available to instances of that type. In the examples above, I added all my functions to `ko.subscribable.fn` to maximize chainability, but that limited set of functions is already has mutual exclusivity. `filter` and `orderBy` only make sense for observable arrays, `currency` only makes sense for numbers, and `date` only makes sense for dates. As long as you are good at keeping stuff straight and using unique names, this is not a huge deal. The same function objects will be shared by all type instances so it's not a big deal for memory consumption.
+You can see that there is no difference between the `fn` and the extender approach in how the `data-bind` attributes in the HTML consume our filter functions. That's pretty cool.
 
-Going crazy with filters can create long dependency chains. In life, as in Knockout, you generally don't get money for nothing and chicks for free. This may seem obvious, but in a long dependency chain, a change at any point will cause re-evaluation of the entire remainder of the chain. If you have 10 filters chained together and you're wondering why your page is sluggish, look there first.
+``` html
+<input type="text" data-bind="value: search, valueUpdate: 'afterkeydown'" />
+<select data-bind="value: orderBy">...</select>
 
-TODO
+<table class="table">
+    ...
+    <tbody data-bind="foreach: dudes.filter(search, 'name').orderBy(orderBy)">
+        <tr>
+            <td data-bind="text: name"></td>
+            <td data-bind="text: amount.currency()"></td>
+            <td data-bind="text: date.date('dddd MMMM Do YYYY')"></td>
+        </tr>
+    </tbody>
+</table>
+```
+
+While it's convenient for all functions you add to `fn` to be available to all subsequent instances of that type, *ALL* functions you add will be available to instances of that type. In the examples above, I added all my functions to `ko.subscribable.fn` to maximize chainability, but that small set of functions is already mutually-exclusive. `filter` and `orderBy` only make sense for observable arrays, `currency` only makes sense for numbers, and `date` only makes sense for dates. They are all there whether they make sense or not. In general, this is not a concern for performance or scalability because each `fn` function object will be shared by every `subscribable`.
+
+Also, with the `fn` approach, putting everything in the same bucket is nice for availability, but if you start defining lots of `fn` functions in multiple files and possibly loading different subsets of those files on each page, you need to be pretty good at keeping those things straight, using unique function names, and keeping function names meaningful.
+
+Chainability is powerful, but it can lead to long filter chains. In life, as in Knockout, you don't get money for nothing and chicks for free. Because we have used `ko.computed` at each step of the way, a change at a point in the filter chain will cause re-evaluation of the remainder of the chain. If you have 10 filters chained together and you're wondering why your page is sluggish, look there first.
+
+I mentioned this above, but I wanted to reiterate it. Using the extender approach can be costly for memory consumption. Each time you `.extend()` a `subscribable`, new functions are added to the target. If you end up extending hundreds or thousands of objects on your page, you might start feeling the pain.
 
 ## Conclusion
 
-TODO
-
-
-
+I hope this was a useful demonstration of the power of `fn` and extender functions in KnockoutJS. In summary, if you are looking for simplicity and ease of use with respect to filtering, I'd say go with `fn` functions. If you need more precision, try extenders.

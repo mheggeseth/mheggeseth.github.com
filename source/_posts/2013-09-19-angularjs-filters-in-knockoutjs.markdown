@@ -83,7 +83,7 @@ Ultimately, there's little difference between `fn` and extenders as far as the e
 
 TODO: EXPLANATION OF EXAMPLE
 
-## Pros and Cons
+## Discussion and Gotchas
 
 While it's convenient for all functions you add to `fn` to be available to all subsequent instances of that type, *ALL* functions you add will be available to instances of that type. In the examples above, I added all my functions to `ko.subscribable.fn` to maximize chainability, but that limited set of functions is already has mutual exclusivity. `filter` and `orderBy` only make sense for observable arrays, `currency` only makes sense for numbers, and `date` only makes sense for dates. As long as you are good at keeping stuff straight and using unique names, this is not a huge deal. The same function objects will be shared by all type instances so it's not a big deal for memory consumption.
 

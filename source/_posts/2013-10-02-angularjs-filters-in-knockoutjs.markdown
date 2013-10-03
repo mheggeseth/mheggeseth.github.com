@@ -3,8 +3,7 @@ layout: post
 title: "AngularJS-ish filters in KnockoutJS"
 date: 2013-10-02 22:00
 comments: true
-categories: 
-published: false
+categories:
 ---
 
 As I learn more about [AnuglarJS](http://angularjs.org), I find [filters](http://docs.angularjs.org/guide/dev_guide.templates.filters) to be one of the most exciting features of the framework. Filters allow common, mostly-simple display-level modifications to expressions in a view without having to include that logic in the model (i.e. `$scope`).
@@ -81,11 +80,11 @@ Ultimately, there's little difference between `fn` and extenders as far as the e
 
 {% jsfiddle ubpS7 js,html,resources,result %}
 
-In the fiddle above, instead of putting all the filter functions I might want to use into the same bag, they are separated by name.
+In the fiddle above, instead of putting all the filter functions I might want to use into the same bag, they are separated by extender name.
 
-`arrayExtensions` is used to extend an `observableArray` with the filter functions `filter` and `orderBy`. These functions work exactly the same as in the `fn` example. However, in order to make the `arrayExtensions` methods chainable, I have to return a `subscribable` and extend it with `arrayExtensions`. This could be easy to forget to do when writing your own filter function. Also, this approach to chainability is not a frugal use of memory since two *new* functions are added to the target each time you call `extend({ arrayExtensions })`.
+`ko.extenders.arrayExtensions` is used to extend an `observableArray` with the filter functions `filter` and `orderBy`. These functions work exactly the same as in the `fn` example. However, in order to make the `arrayExtensions` methods chainable, I have to return a `subscribable` extended with `arrayExtensions`. This could be easy to forget to do when writing your own filter function. Also, this approach to chainability is not a frugal use of memory since two *new* functions are added to the target each time you call `extend({ arrayExtensions: true })`.
 
-`formatting` is used to extend an `observable` with filter functions that are appropriate to its data type (provided in the extender options). Due to their simplicity, I did not make these filter functions chainable. I suppose they could be, but I couldn't think of a good reason to do that here.
+`ko.extenders.formatting` is used to extend an `observable` with filter functions that are appropriate to its data type (either `"date"` or `"currency"`, provided as the extender option). Due to their simplicity, I did not make these filter functions chainable. I suppose they could be, but I couldn't think of a good reason to do that here.
 
 To reiterate, in order to take advantage of these filter functions, I have to call `.extend()` for my `amount`, `date`, and `dudes` observables.
 
@@ -109,14 +108,18 @@ You can see that there is no difference between the `fn` and the extender approa
 </table>
 ```
 
-While it's convenient for all functions you add to `fn` to be available to all subsequent instances of that type, *ALL* functions you add will be available to instances of that type. In the examples above, I added all my functions to `ko.subscribable.fn` to maximize chainability, but that small set of functions is already mutually-exclusive. `filter` and `orderBy` only make sense for observable arrays, `currency` only makes sense for numbers, and `date` only makes sense for dates. They are all there whether they make sense or not. In general, this is not a concern for performance or scalability because each `fn` function object will be shared by every `subscribable`.
+While it's convenient for all functions you add to `fn` to be available to all subsequent instances of that type, *ALL* functions you add will be available to instances of that type. In the examples above, I added all my functions to `ko.subscribable.fn` to maximize chainability, but that small set of functions is already mutually-exclusive. `filter` and `orderBy` only make sense for observable arrays, `currency` only makes sense for numbers, and `date` only makes sense for dates. They are all there whether they make sense to be or not. Fortunately this is not a big concern for performance or scalability because each `fn` function object is shared by every `subscribable`.
 
-Also, with the `fn` approach, putting everything in the same bucket is nice for availability, but if you start defining lots of `fn` functions in multiple files and possibly loading different subsets of those files on each page, you need to be pretty good at keeping those things straight, using unique function names, and keeping function names meaningful.
+Also, with the `fn` approach, putting everything in the same bucket is nice for availability, but if you start defining lots of `fn` functions in multiple files and possibly loading different subsets of those files on each page, you need to be pretty good at keeping those things straight, using unique function names, and keeping function names meaningful as to which date type they should be used for.
 
 Chainability is powerful, but it can lead to long filter chains. In life, as in Knockout, you don't get money for nothing and chicks for free. Because we have used `ko.computed` at each step of the way, a change at a point in the filter chain will cause re-evaluation of the remainder of the chain. If you have 10 filters chained together and you're wondering why your page is sluggish, look there first.
 
 I mentioned this above, but I wanted to reiterate it. Using the extender approach can be costly for memory consumption. Each time you `.extend()` a `subscribable`, new functions are added to the target. If you end up extending hundreds or thousands of objects on your page, you might start feeling the pain.
 
+You may have noticed that `arrayExtensions` does not use its `options` parameter so it does not matter what the value is, but in order to call `.extend()` with valid JSON, a value must be provided. For no particular reason, I chose to provide `true`.
+
 ## Conclusion
 
-I hope this was a useful demonstration of the power of `fn` and extender functions in KnockoutJS. In summary, if you are looking for simplicity and ease of use with respect to filtering, I'd say go with `fn` functions. If you need more precision, try extenders.
+I hope this was a useful demonstration of the power of `fn` and extender functions in KnockoutJS. In summary, if you are looking for simplicity and ease of use with respect to filtering, I'd say go with `fn` functions. If you need more precision but perhaps don't care as much about convenience, try extenders.
+
+Enjoy, and let me know what you think!

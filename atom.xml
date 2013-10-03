@@ -4,7 +4,7 @@
   <title><![CDATA[Just Enough To Be Dangerous]]></title>
   <link href="http://mheggeseth.github.io/atom.xml" rel="self"/>
   <link href="http://mheggeseth.github.io/"/>
-  <updated>2013-09-10T11:18:16-05:00</updated>
+  <updated>2013-10-02T23:11:27-05:00</updated>
   <id>http://mheggeseth.github.io/</id>
   <author>
     <name><![CDATA[Michael Heggeseth]]></name>
@@ -12,6 +12,167 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[AngularJS-ish filters in KnockoutJS]]></title>
+    <link href="http://mheggeseth.github.io/blog/2013/10/02/angularjs-filters-in-knockoutjs/"/>
+    <updated>2013-10-02T22:00:00-05:00</updated>
+    <id>http://mheggeseth.github.io/blog/2013/10/02/angularjs-filters-in-knockoutjs</id>
+    <content type="html"><![CDATA[<p>As I learn more about <a href="http://angularjs.org">AnuglarJS</a>, I find <a href="http://docs.angularjs.org/guide/dev_guide.templates.filters">filters</a> to be one of the most exciting features of the framework. Filters allow common, mostly-simple display-level modifications to expressions in a view without having to include that logic in the model (i.e. <code>$scope</code>).</p>
+
+<p>Applying a filter to an expression in an Angular view is super easy: <code>{{ expression | filter }}</code> and you&rsquo;re done. Angular comes with a handful of filters for scalar values (<a href="http://docs.angularjs.org/api/ng.filter:number">number</a>, <a href="http://docs.angularjs.org/api/ng.filter:currency">currency</a>, <a href="http://docs.angularjs.org/api/ng.filter:date">date</a>) and arrays (<a href="http://docs.angularjs.org/api/ng.filter:filter">filter</a>, <a href="http://docs.angularjs.org/api/ng.filter:limitTo">limit</a>, <a href="http://docs.angularjs.org/api/ng.filter:orderBy">order</a>) but it&rsquo;s also pretty easy to write your own.</p>
+
+<p>In addition to &ldquo;write once, use everywhere&rdquo; convenience, filters are also chainable. This is particularly useful with Angular&rsquo;s array filters: <code>{{ customerList | filter:searchText | orderBy:'earnings' }}</code> works just like it reads (only show customers with a property value containing the value of the model property <code>searchText</code> and then order those customers by the <code>earnings</code> property). And of course it live-updates when you change <code>searchText</code>.</p>
+
+<p>OK, so Angular is awesome. But what if I&rsquo;ve already done a bunch of stuff using another library (<a href="http://knockoutjs.com">KnockoutJS</a> in my case)? Can I do something like a filter in Knockout? <strong>Hint: yes.</strong></p>
+
+<p>Knockout has two ways that this could work: <a href="http://knockoutjs.com/documentation/fn.html">&ldquo;fn&rdquo; functions</a> and <a href="http://knockoutjs.com/documentation/extenders.html">extenders</a>.</p>
+
+<h2>How <code>fn</code> works</h2>
+
+<p>Each of Knockout&rsquo;s subscribable types exposes a public <code>fn</code> object to which you can add new functions to extend that type with cool new stuff. From then on, that stuff will be available on any new instance of that type. You can add new functions to any of the following:</p>
+
+<ul>
+<li><code>ko.subscribable.fn</code></li>
+<li><code>ko.observable.fn</code></li>
+<li><code>ko.observableArray.fn</code></li>
+<li><code>ko.computed.fn</code></li>
+</ul>
+
+
+<p>And because of inheritance, functions that you add to a type will be usable by objects of any of its derived types. We&rsquo;ll see why this is great for filters in a second.</p>
+
+<p><img src="http://mheggeseth.github.io/images/posts/type-hierarchy.png"></p>
+
+<h2>Filters with <code>fn</code></h2>
+
+<p>So how do we turn this into something like filters? Take a look at this fiddle.</p>
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/Mp5jw/embedded/js,html,resources,result/light/"></iframe>
+
+
+<p>You can see that I&rsquo;ve added 4 functions to <code>ko.subscribable.fn</code>:</p>
+
+<ul>
+<li><code>filter</code> to filter an array by a string value</li>
+<li><code>orderBy</code> to order an array by an element property value</li>
+<li><code>currency</code> to format a number as currency</li>
+<li><code>date</code> to format a date</li>
+</ul>
+
+
+<h3>Why <code>ko.subscribable.fn</code>?</h3>
+
+<p>Why not put <code>filter</code> and <code>orderBy</code> on <code>ko.observableArray.fn</code> and put <code>currency</code> and <code>date</code> on <code>ko.observable.fn</code>? Simple: adding these functions to <code>ko.subscribable</code> maximizes chainability.</p>
+
+<p>Let me explain. First, you want to return a <code>ko.computed</code> from filter functions. This ensures automatic UI updates because Knockout tracks subscribables accessed in the function body of a <code>ko.computed</code> and automatically re-evaluates the function when any of those values changes. But a <code>ko.computed</code> is not an observable or an observableArray. It is a <code>ko.subscribable</code>, though. So adding these functions to <code>ko.subscribable.fn</code> allows the inclusion of clear, chainable filters in data bindings like this one: <code>data-bind="foreach: dudes.filter(search, 'name').orderBy(orderBy)"</code>.</p>
+
+<p>It even makes sense to put the scalar (<code>currency</code> and <code>date</code>) filters on <code>ko.subscribable.fn</code> in case you ever add a filter (or filters) that whittles an array to a single value (i.e. <code>first</code>, <code>last</code>, <code>findOne</code>, <code>imFeelingLucky</code>, etc.).</p>
+
+<p>By putting filter functions on <code>ko.subscribable.fn</code>, they are available to <strong>all</strong> subscribable types, giving you lots and lots of flexibility.</p>
+
+<h2>How extenders work</h2>
+
+<p>Extenders and <code>fn</code> are really similar. To create and use an extender, throw in some code like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">ko</span><span class="p">.</span><span class="nx">extenders</span><span class="p">.</span><span class="nx">awesomeSauce</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="c1">//target is the subscribable object you are extending</span>
+</span><span class='line'>  <span class="c1">// add stuff to it and you can use it in your viewModel and bindings</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//options is the object provided to the initialization of the extender</span>
+</span><span class='line'>  <span class="c1">// use it to control what to add or how those additions behave</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">return</span> <span class="nx">target</span><span class="p">;</span> <span class="c1">//if you don&#39;t return target, you might lose track of it</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">foo</span> <span class="o">=</span> <span class="nx">ko</span><span class="p">.</span><span class="nx">observable</span><span class="p">().</span><span class="nx">extend</span><span class="p">({</span> <span class="nx">awesomeSauce</span><span class="o">:</span> <span class="p">{</span> <span class="nx">thing1</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">thing2</span><span class="o">:</span> <span class="kc">false</span> <span class="p">}});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ultimately, there&rsquo;s little difference between <code>fn</code> and extenders as far as the end result is concerned. They both allow you to extend a subscribable. These are really the only differences:</p>
+
+<ul>
+<li>You have to (or &ldquo;can be&rdquo;) be more explicit when you want to add extenders to a subscribable by calling <code>.extend()</code>. No automatic inclusion as with <code>fn</code>.</li>
+<li>You can (or &ldquo;have to&rdquo;) provide options when you add an extender. This allows you to be more precise about what exactly your subscribable is extended with or how that stuff behaves.</li>
+</ul>
+
+
+<h2>Filters with extenders</h2>
+
+<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/ubpS7/embedded/js,html,resources,result/light/"></iframe>
+
+
+<p>In the fiddle above, instead of putting all the filter functions I might want to use into the same bag, they are separated by extender name.</p>
+
+<p><code>ko.extenders.arrayExtensions</code> is used to extend an <code>observableArray</code> with the filter functions <code>filter</code> and <code>orderBy</code>. These functions work exactly the same as in the <code>fn</code> example. However, in order to make the <code>arrayExtensions</code> methods chainable, I have to return a <code>subscribable</code> extended with <code>arrayExtensions</code>. This could be easy to forget to do when writing your own filter function. Also, this approach to chainability is not a frugal use of memory since two <em>new</em> functions are added to the target each time you call <code>extend({ arrayExtensions: true })</code>.</p>
+
+<p><code>ko.extenders.formatting</code> is used to extend an <code>observable</code> with filter functions that are appropriate to its data type (either <code>"date"</code> or <code>"currency"</code>, provided as the extender option). Due to their simplicity, I did not make these filter functions chainable. I suppose they could be, but I couldn&rsquo;t think of a good reason to do that here.</p>
+
+<p>To reiterate, in order to take advantage of these filter functions, I have to call <code>.extend()</code> for my <code>amount</code>, <code>date</code>, and <code>dudes</code> observables.</p>
+
+<h2>Discussion and Gotchas</h2>
+
+<p>You can see that there is no difference between the <code>fn</code> and the extender approach in how the <code>data-bind</code> attributes in the HTML consume our filter functions. That&rsquo;s pretty cool.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">data-bind=</span><span class="s">&quot;value: search, valueUpdate: &#39;afterkeydown&#39;&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;select</span> <span class="na">data-bind=</span><span class="s">&quot;value: orderBy&quot;</span><span class="nt">&gt;</span>...<span class="nt">&lt;/select&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;table</span> <span class="na">class=</span><span class="s">&quot;table&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    ...
+</span><span class='line'>    <span class="nt">&lt;tbody</span> <span class="na">data-bind=</span><span class="s">&quot;foreach: dudes.filter(search, &#39;name&#39;).orderBy(orderBy)&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;td</span> <span class="na">data-bind=</span><span class="s">&quot;text: name&quot;</span><span class="nt">&gt;&lt;/td&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;td</span> <span class="na">data-bind=</span><span class="s">&quot;text: amount.currency()&quot;</span><span class="nt">&gt;&lt;/td&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;td</span> <span class="na">data-bind=</span><span class="s">&quot;text: date.date(&#39;dddd MMMM Do YYYY&#39;)&quot;</span><span class="nt">&gt;&lt;/td&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/tbody&gt;</span>
+</span><span class='line'><span class="nt">&lt;/table&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>While it&rsquo;s convenient for all functions you add to <code>fn</code> to be available to all subsequent instances of that type, <em>ALL</em> functions you add will be available to instances of that type. In the examples above, I added all my functions to <code>ko.subscribable.fn</code> to maximize chainability, but that small set of functions is already mutually-exclusive. <code>filter</code> and <code>orderBy</code> only make sense for observable arrays, <code>currency</code> only makes sense for numbers, and <code>date</code> only makes sense for dates. They are all there whether they make sense to be or not. Fortunately this is not a big concern for performance or scalability because each <code>fn</code> function object is shared by every <code>subscribable</code>.</p>
+
+<p>Also, with the <code>fn</code> approach, putting everything in the same bucket is nice for availability, but if you start defining lots of <code>fn</code> functions in multiple files and possibly loading different subsets of those files on each page, you need to be pretty good at keeping those things straight, using unique function names, and keeping function names meaningful as to which date type they should be used for.</p>
+
+<p>Chainability is powerful, but it can lead to long filter chains. In life, as in Knockout, you don&rsquo;t get money for nothing and chicks for free. Because we have used <code>ko.computed</code> at each step of the way, a change at a point in the filter chain will cause re-evaluation of the remainder of the chain. If you have 10 filters chained together and you&rsquo;re wondering why your page is sluggish, look there first.</p>
+
+<p>I mentioned this above, but I wanted to reiterate it. Using the extender approach can be costly for memory consumption. Each time you <code>.extend()</code> a <code>subscribable</code>, new functions are added to the target. If you end up extending hundreds or thousands of objects on your page, you might start feeling the pain.</p>
+
+<p>You may have noticed that <code>arrayExtensions</code> does not use its <code>options</code> parameter so it does not matter what the value is, but in order to call <code>.extend()</code> with valid JSON, a value must be provided. For no particular reason, I chose to provide <code>true</code>.</p>
+
+<h2>Conclusion</h2>
+
+<p>I hope this was a useful demonstration of the power of <code>fn</code> and extender functions in KnockoutJS. In summary, if you are looking for simplicity and ease of use with respect to filtering, I&rsquo;d say go with <code>fn</code> functions. If you need more precision but perhaps don&rsquo;t care as much about convenience, try extenders.</p>
+
+<p>Enjoy, and let me know what you think!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[I Have A Blog?]]></title>

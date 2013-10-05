@@ -3,7 +3,7 @@ layout: post
 title: "AngularJS-ish filters in KnockoutJS"
 date: 2013-10-02 22:00
 comments: true
-categories:
+categories: knockoutjs
 ---
 
 As I learn more about [AnuglarJS](http://angularjs.org), I find [filters](http://docs.angularjs.org/guide/dev_guide.templates.filters) to be one of the most exciting features of the framework. Filters allow common, mostly-simple display-level modifications to expressions in a view without having to include that logic in the model (i.e. `$scope`).

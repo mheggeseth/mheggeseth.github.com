@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Just Enough To Be Dangerous]]></title>
-  <link href="http://mheggeseth.github.io/atom.xml" rel="self"/>
+  <title><![CDATA[Category: knockoutjs | Just Enough To Be Dangerous]]></title>
+  <link href="http://mheggeseth.github.io/blog/categories/knockoutjs/atom.xml" rel="self"/>
   <link href="http://mheggeseth.github.io/"/>
   <updated>2013-10-05T15:59:14-05:00</updated>
   <id>http://mheggeseth.github.io/</id>
@@ -42,14 +42,13 @@
 
 <p>And because of inheritance, functions that you add to a type will be usable by objects of any of its derived types. We&rsquo;ll see why this is great for filters in a second.</p>
 
-<p><img src="http://mheggeseth.github.io/images/posts/type-hierarchy.png"></p>
+<p><img src="/images/posts/type-hierarchy.png"></p>
 
 <h2>Filters with <code>fn</code></h2>
 
 <p>So how do we turn this into something like filters? Take a look at this fiddle.</p>
 
-<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/Mp5jw/embedded/js,html,resources,result/light/"></iframe>
-
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/Mp5jw/embedded/js,html,resources,result/light/"></iframe></p>
 
 <p>You can see that I&rsquo;ve added 4 functions to <code>ko.subscribable.fn</code>:</p>
 
@@ -75,32 +74,22 @@
 
 <p>Extenders and <code>fn</code> are really similar. To create and use an extender, throw in some code like this:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">ko</span><span class="p">.</span><span class="nx">extenders</span><span class="p">.</span><span class="nx">awesomeSauce</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//target is the subscribable object you are extending</span>
-</span><span class='line'>  <span class="c1">// add stuff to it and you can use it in your viewModel and bindings</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//options is the object provided to the initialization of the extender</span>
-</span><span class='line'>  <span class="c1">// use it to control what to add or how those additions behave</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="k">return</span> <span class="nx">target</span><span class="p">;</span> <span class="c1">//if you don&#39;t return target, you might lose track of it</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">foo</span> <span class="o">=</span> <span class="nx">ko</span><span class="p">.</span><span class="nx">observable</span><span class="p">().</span><span class="nx">extend</span><span class="p">({</span> <span class="nx">awesomeSauce</span><span class="o">:</span> <span class="p">{</span> <span class="nx">thing1</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">thing2</span><span class="o">:</span> <span class="kc">false</span> <span class="p">}});</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>``` javascript
+ko.extenders.awesomeSauce = function (target, options) {</p>
 
+<pre><code>//target is the subscribable object you are extending
+//  add stuff to it and you can use it in your viewModel and bindings
+
+//options is the object provided to the initialization of the extender
+//  use it to control what to add or how those additions behave
+
+return target; //if you don't return target, you might lose track of it
+</code></pre>
+
+<p>};</p>
+
+<p>foo = ko.observable().extend({ awesomeSauce: { thing1: true, thing2: false }});
+```</p>
 
 <p>Ultimately, there&rsquo;s little difference between <code>fn</code> and extenders as far as the end result is concerned. They both allow you to extend a subscribable. These are really the only differences:</p>
 
@@ -112,8 +101,7 @@
 
 <h2>Filters with extenders</h2>
 
-<iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/ubpS7/embedded/js,html,resources,result/light/"></iframe>
-
+<p><iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/ubpS7/embedded/js,html,resources,result/light/"></iframe></p>
 
 <p>In the fiddle above, instead of putting all the filter functions I might want to use into the same bag, they are separated by extender name.</p>
 
@@ -127,34 +115,23 @@
 
 <p>You can see that there is no difference between the <code>fn</code> and the extender approach in how the <code>data-bind</code> attributes in the HTML consume our filter functions. That&rsquo;s pretty cool.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">data-bind=</span><span class="s">&quot;value: search, valueUpdate: &#39;afterkeydown&#39;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'><span class="nt">&lt;select</span> <span class="na">data-bind=</span><span class="s">&quot;value: orderBy&quot;</span><span class="nt">&gt;</span>...<span class="nt">&lt;/select&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;table</span> <span class="na">class=</span><span class="s">&quot;table&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    ...
-</span><span class='line'>    <span class="nt">&lt;tbody</span> <span class="na">data-bind=</span><span class="s">&quot;foreach: dudes.filter(search, &#39;name&#39;).orderBy(orderBy)&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;td</span> <span class="na">data-bind=</span><span class="s">&quot;text: name&quot;</span><span class="nt">&gt;&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;td</span> <span class="na">data-bind=</span><span class="s">&quot;text: amount.currency()&quot;</span><span class="nt">&gt;&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;td</span> <span class="na">data-bind=</span><span class="s">&quot;text: date.date(&#39;dddd MMMM Do YYYY&#39;)&quot;</span><span class="nt">&gt;&lt;/td&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/tbody&gt;</span>
-</span><span class='line'><span class="nt">&lt;/table&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>``` html
+<input type="text" data-bind="value: search, valueUpdate: 'afterkeydown'" />
+<select data-bind="value: orderBy">&hellip;</select></p>
 
+<table class="table">
+    ...
+    <tbody data-bind="foreach: dudes.filter(search, 'name').orderBy(orderBy)">
+        <tr>
+            <td data-bind="text: name"></td>
+            <td data-bind="text: amount.currency()"></td>
+            <td data-bind="text: date.date('dddd MMMM Do YYYY')"></td>
+        </tr>
+    </tbody>
+</table>
+
+
+<p>```</p>
 
 <p>While it&rsquo;s convenient for all functions you add to <code>fn</code> to be available to all subsequent instances of that type, <em>ALL</em> functions you add will be available to instances of that type. In the examples above, I added all my functions to <code>ko.subscribable.fn</code> to maximize chainability, but that small set of functions is already mutually-exclusive. <code>filter</code> and <code>orderBy</code> only make sense for observable arrays, <code>currency</code> only makes sense for numbers, and <code>date</code> only makes sense for dates. They are all there whether they make sense to be or not. Fortunately this is not a big concern for performance or scalability because each <code>fn</code> function object is shared by every <code>subscribable</code>.</p>
 
@@ -171,46 +148,6 @@
 <p>I hope this was a useful demonstration of the power of <code>fn</code> and extender functions in KnockoutJS. In summary, if you are looking for simplicity and ease of use with respect to filtering, I&rsquo;d say go with <code>fn</code> functions. If you need more precision but perhaps don&rsquo;t care as much about convenience, try extenders.</p>
 
 <p>Enjoy, and let me know what you think!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[I Have A Blog?]]></title>
-    <link href="http://mheggeseth.github.io/blog/2013/09/07/i-have-a-blog/"/>
-    <updated>2013-09-07T19:34:00-05:00</updated>
-    <id>http://mheggeseth.github.io/blog/2013/09/07/i-have-a-blog</id>
-    <content type="html"><![CDATA[<p>Somebody: &ldquo;Hey, look over there. It&rsquo;s a blog.&#8221;<br/>
-Everybody: &#8220;Oooohhhhh!&#8221;<br/>
-Somebody (maybe somebody else): &#8220;A developer blog!&#8221;<br/>
-Everybody (again): &#8220;Wooowwwww!&rdquo;</p>
-
-<p>Notwithstanding the widespread, public fanfare that accompanies the debut of a developer blog, it&rsquo;s my first day and I really don&rsquo;t know what I&rsquo;m doing here. So to get started I went to the font of blogging wisdom, Scott Hanselman, and found <a href="http://www.hanselman.com/blog/YourBlogIsTheEngineOfCommunity.aspx">&ldquo;Your Blog is the Engine of Community&rdquo;</a> which made me feel like:<br/>
-<img src="http://mheggeseth.github.io/images/posts/anchorman-excited.jpg"></p>
-
-<p>Then I found <a href="http://kencenerelli.wordpress.com/2012/03/20/personal-branding-for-software-developers/">&ldquo;Personal Branding for Software Developers&rdquo;</a> and it made me feel a little like:<br/>
-<img src="http://mheggeseth.github.io/images/posts/bored-dog.jpg"></p>
-
-<p>Building my personal brand? Maybe. I did make a sweet logo in Paint.NET and brought in some snazzy web fonts. <em>Incidentally, <a href="http://www.google.com/fonts">Google Fonts</a> is a great way to waste several hours.</em> Let&rsquo;s stick with the hippy-dippy, free-love blogging advertized by Mr. Hanselman.</p>
-
-<p>My goals for this blog are these:</p>
-
-<ul>
-<li><strong>Be helpful.</strong> While I want this blog to be a container for my passion for software development, I also want what I put out there to be useful to somebody (maybe even somebodies). If I can solve a problem, that means another developer doesn&rsquo;t have to. Everybody wins and it&rsquo;s good karma.</li>
-<li><strong>Get better.</strong> I know some things, but I don&rsquo;t know a lot of things. Aside from the personal and technical growth that will come from the process of preparing my words and bits for all to see, I love collaborating with and learning from people who know more than I do.</li>
-<li><strong>Avoid TL;DR.</strong> No matter how interesting a post is, it&rsquo;s frustrating to read for 10 minutes, only to realize you still have a ways to go. I&rsquo;ll try to blow your mind, but keep it quick.</li>
-</ul>
-
-
-<p>I hope you read and enjoy what is to come and I encourage your feedback!</p>
-
-<p><small>Thanks to <a href="http://www.knockmeout.net">Ryan Niemeyer</a> for the help in getting this set up.</small></p>
-
-<h4>A Little About Me</h4>
-
-<p>I&rsquo;ve been a software developer for 9 years, doing web development for most of that time. For a number of years I worked on an application using ASP.NET, C#, and SQL Server. Since the emergence of JavaScript in recent years, I&rsquo;ve done a lot more work on that front, especially with <a href="http://jquery.com">jQuery</a> (obvious, right?), <a href="http://knockoutjs.com">KnockoutJS</a>, and even <a href="http://vanilla-js.com/">Vanilla JS</a>. There are many more frameworks and libraries that are interesting to me, but for which I have yet to scratch the surface, so I&rsquo;m excited to use this blog as a venue for those adventures.</p>
-
-<p>I&rsquo;m also lucky to be a husband and father to two special ladies and one furry one.<br/>
-<img class="inline" src="http://mheggeseth.github.io/images/posts/kirsten-emma.jpg" width="350"><img src="http://mheggeseth.github.io/images/posts/emma-izzy.jpg" width="350"></p>
 ]]></content>
   </entry>
   

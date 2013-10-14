@@ -142,7 +142,7 @@ JSONP is not part of the OData spec, however JSONP support can easily be added t
 
 ## Result
 
-{% img /images/posts/load-sessions.jpg %}
+{% img /images/posts/load-session-list.jpg %}
 
 It's a pretty bland and useless list of sessions. But we'll change that.
 

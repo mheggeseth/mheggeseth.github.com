@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: jquery | Just Enough To Be Dangerous]]></title>
+  <link href="http://mheggeseth.github.io/blog/categories/jquery/atom.xml" rel="self"/>
+  <link href="http://mheggeseth.github.io/"/>
+  <updated>2013-10-13T21:31:14-05:00</updated>
+  <id>http://mheggeseth.github.io/</id>
+  <author>
+    <name><![CDATA[Michael Heggeseth]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[A Simple, Responsive Conference Session List: Part 1]]></title>
+    <link href="http://mheggeseth.github.io/blog/2013/10/13/conference-sessions-1/"/>
+    <updated>2013-10-13T22:55:00-05:00</updated>
+    <id>http://mheggeseth.github.io/blog/2013/10/13/conference-sessions-1</id>
+    <content type="html"><![CDATA[<p>August 2012 was the inaugural <a href="http://thatconference.com">That Conference</a>. It was an awesome conference (one that I will attend as long as it keeps going), but having just my iPhone with me, it was a challenge to peruse upcoming sessions using the conference&rsquo;s less-than-mobile-friendly website. So before I geared up to attend That Conference 2013, I built a mobile-friendly page for browsing sessions.</p>
+
+<h3>What I wanted</h3>
+
+<ul>
+<li>View sessions as simply as possible. Minimize cruft.</li>
+<li>Hide or diminish irrelevant information. Specifically, hide sessions that have already happened.</li>
+<li>Track favorite sessions without accounts.</li>
+<li>Tolerate inconsistent connectivity and bandwidth (it&rsquo;s a conference, after all).</li>
+<li>Provide a usable, consistent experience at any screen width.</li>
+</ul>
+
+
+<p><strong>To be clear,</strong> the That Conference organizers did a great job creating a mobile app for 2013 (which I didn&rsquo;t know about when I wrote my page). I tried it and liked it, but there were a couple features my page had that were important to me so I ended up using my page for most of the conference. I&rsquo;m looking forward to seeing how the mobile app improves for 2014. It will probably have useful features that I haven&rsquo;t even thought of.</p>
+
+<h3>Part 1 of N&hellip;</h3>
+
+<p>To keep this post from becoming <em>The Odyssey</em>, I&rsquo;m breaking down the construction and evolution of the page into a series of posts. I&rsquo;m not sure how many there will be yet. My intention is to go step-by-step through my &ldquo;process&rdquo; of building the page, paying special attention to the tools and techniques I used along the way as well as well as pointing out difficulties and areas for improvement. Let&rsquo;s get started!</p>
+
+<p><em>Want to follow along? <a href="http://git-scm.com/downloads">Install Git</a>, clone the repo below, then checkout the specified tag to get the full code state for that step.</em></p>
+
+<pre><code>git clone https://github.com/mheggeseth/ThatSessions.git
+</code></pre>
+
+<h2>Bootstrap boilerplate</h2>
+
+<pre><code>git checkout -f bootstrap-boilerplate
+</code></pre>
+
+<p>We&rsquo;ll start with the HTML boilerplate provided by <a href="http://getbootstrap.com/getting-started/">Bootstrap</a>. If you aren&rsquo;t famliar with Bootstrap, you&rsquo;re at least familiar with its style (<a href="http://twitter.com">Twitter</a>, <a href="http://angularjs.org">Angular</a>, and the web sites for many other open source frameworks). As a nice-looking, easy-to-use, responsive-by-default front-end library, it&rsquo;s an easy win for small projects.</p>
+
+<p>``` html
+&lt;!DOCTYPE html>
+<html>
+  <head></p>
+
+<pre><code>&lt;title&gt;That Conference / Sessions&lt;/title&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+&lt;!-- Bootstrap --&gt;
+&lt;link href="css/bootstrap.min.css" rel="stylesheet" media="screen"&gt;
+</code></pre>
+
+<p>  </head>
+  <body></p>
+
+<pre><code>&lt;nav class="navbar navbar-inverse" role="navigation"&gt;
+    &lt;div class="navbar-header"&gt;
+        &lt;a class="navbar-brand visible-xs" href="#"&gt;That / Sessions&lt;/a&gt;
+        &lt;a class="navbar-brand hidden-xs" href="#"&gt;That Conference / Sessions&lt;/a&gt;
+    &lt;/div&gt;
+&lt;/nav&gt;
+
+&lt;div class="container"&gt;
+    &lt;div class="jumbotron"&gt;
+        &lt;div class="container"&gt;
+            &lt;h1&gt;Hello, world!&lt;/h1&gt;
+            &lt;p&gt;Do you think we should write some code to load the sessions? Yes.&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- jQuery (necessary for Bootstrap's JavaScript plugins) --&gt;
+&lt;script src="http://mheggeseth.github.io//code.jquery.com/jquery.js"&gt;&lt;/script&gt;
+&lt;!-- Include all compiled plugins (below), or include individual files as needed --&gt;
+&lt;script src="js/bootstrap.min.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>  </body>
+</html>
+```</p>
+
+<p><img src="/images/posts/bootstrap-boilerplate-screenshot.png"></p>
+
+<p>I&rsquo;ve already made one nice customization to the boilerplate, taking advantage of the <a href="http://getbootstrap.com/css/#responsive-utilities">responsive utility classes</a> that come with Bootstrap. When the browser width is narrow (i.e. mobile devices) shorten the header title to save space. The <code>visible-xs</code> class ensures an element will only be visible when the browser width is &ldquo;extra small&rdquo;. <code>hidden-xs</code> ensures an element is always hidden when the browser width is narrow.</p>
+
+<p><code>html
+...
+&lt;a class="navbar-brand visible-xs" href="#"&gt;That / Sessions&lt;/a&gt;
+&lt;a class="navbar-brand hidden-xs" href="#"&gt;That Conference / Sessions&lt;/a&gt;
+...
+</code></p>
+
+<p><img src="/images/posts/bootstrap-boilerplate-screenshot-xs.png"></p>
+
+<p>This will come in handy later in case we want to add other controls to the page header and keep them tidy on mobile devices.</p>
+
+<h3>Tangent: Ad-Hoc HTTP Server with Node and <code>http-server</code></h3>
+
+<p>If you have a favorite way of spinning up ad-hoc local HTTP servers, vaya con dios. For me, I turn to the <a href="https://github.com/nodeapps/http-server">http-server</a> package for <a href="http://nodejs.org">Node</a>. Install it globally and you can fire up an HTTP server from any location with <code>http-server</code>. It even gives you a unique port if you spin up multiple servers. Not too bad.</p>
+
+<h2>Get me some sessions (with help from OData, jQuery, &amp; JSONP)</h2>
+
+<pre><code>git checkout -f load-sessions
+</code></pre>
+
+<p>So we have a fairly nice-looking page that does exactly nothing. Let&rsquo;s get some sessions.</p>
+
+<p>First I have to figure out how to do that. I&rsquo;m somewhat familiar with <a href="http://www.odata.org/">OData</a> so that&rsquo;s what I&rsquo;ll sniff out first. If you aren&rsquo;t familiar, OData is short-hand for the Open Data Protocol: an effort to document and encourage a standard for data APIs on the web.</p>
+
+<p>And I think I might be in luck. Taking a look at the kind of AJAX-y stuff the That Conference home page is accessing using the Chrome Developer Tools, it looks like the site exposes an OData API.</p>
+
+<p><img src="/images/posts/odata-discovery.jpg"></p>
+
+<p>Let&rsquo;s see what we get at <code>thatconference.com/odata/api.svc/?$format=json</code>.</p>
+
+<p><img src="/images/posts/odata-discovery-1.jpg"></p>
+
+<p>Mmmm, <code>Sessions</code>. That sounds good. I&rsquo;ll have that. Let&rsquo;s see what&rsquo;s behind <code>thatconference.com/odata/api.svc/Sessions?$format=json</code>.</p>
+
+<p><img src="/images/posts/odata-discovery-sessions.jpg"></p>
+
+<p>Data. Just as I thought. Let&rsquo;s get this sweet, sweet data in our page using our old friend jQuery.</p>
+
+<p>We replace our &ldquo;hello world&rdquo; hero box with</p>
+
+<p>``` html</p>
+
+<ul id="sessionList" class="list-unstyled"></ul>
+
+
+<p>```</p>
+
+<p>and get the sessions using a jQuery <code>$.ajax</code> call with JSONP:</p>
+
+<p>``` html</p>
+
+<script type="text/javascript">
+    $.ajax({
+        url: "http://www.thatconference.com/odata/api.svc/Sessions?$format=json&$callback=?",
+        dataType: "jsonp",
+        success: function (data) {
+            var sessions = data.d;
+            var $sessionList = $("#sessionList");
+            $.each(sessions, function(index, session) {
+                $("<li></li>").text(session.Title).appendTo($sessionList);
+            });
+        }
+    });
+</script>
+
+
+<p>```</p>
+
+<h3>Tangent: JSONP</h3>
+
+<p>For security reasons, browsers don&rsquo;t allow AJAX requests to different domains than the current page. This is a good thing, but what if you want to do something legit like show recent tweets or load some conference sessions. JSONP is a clever trick for doing that. While you can&rsquo;t do AJAX requests to any old domain, you can load JavaScript from any old domain.</p>
+
+<p>JSONP says, &ldquo;If I add a <code>&lt;script&gt;</code> tag to this page with the URL of a remote API I want to call and I also provide it the name of a callback function, you (the remote API) promise to return valid JavaScript invoking that function with the data I&rsquo;ve requested.&rdquo;</p>
+
+<h3>JSONP/OData Caveat</h3>
+
+<p>JSONP is not part of the OData spec, however JSONP support can easily be added to a WCF Data Service which natively supports OData. It just so happens that <code>thatconference.com/odata/api.svc</code> is one of these.</p>
+
+<h2>Result</h2>
+
+<p><img src="/images/posts/load-sessions.jpg"></p>
+
+<p>It&rsquo;s a pretty bland and useless list of sessions. But we&rsquo;ll change that.</p>
+
+<p>In the next post, we&rsquo;ll add a proper view model with <a href="http://knockoutjs.com">KnockoutJS</a> and see what we can do with Bootstrap to improve our style.</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -2,22 +2,26 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://mheggeseth.github.io/blog/2013/09/07/i-have-a-blog/</loc>
-        <lastmod>2013-09-12T23:39:31-05:00</lastmod>
+        <lastmod>2013-09-22T20:53:34-05:00</lastmod>
     </url>
     <url>
         <loc>http://mheggeseth.github.io/blog/2013/10/02/angularjs-filters-in-knockoutjs/</loc>
-        <lastmod>2013-10-05T15:11:58-05:00</lastmod>
+        <lastmod>2013-10-13T18:45:59-05:00</lastmod>
+    </url>
+    <url>
+        <loc>http://mheggeseth.github.io/blog/2013/10/13/conference-sessions-1/</loc>
+        <lastmod>2013-10-13T21:28:36-05:00</lastmod>
     </url>
     <url>
         <loc>http://mheggeseth.github.io/blog/archives/</loc>
-        <lastmod>2013-10-05T15:11:58-05:00</lastmod>
+        <lastmod>2013-10-13T21:28:36-05:00</lastmod>
     </url>
     <url>
         <loc>http://mheggeseth.github.io/</loc>
-        <lastmod>2013-10-05T15:11:58-05:00</lastmod>
+        <lastmod>2013-10-13T21:28:36-05:00</lastmod>
     </url>
     <url>
         <loc>http://mheggeseth.github.io/robots.txt</loc>
-        <lastmod>2013-09-04T22:06:11-05:00</lastmod>
+        <lastmod>2013-08-27T19:20:52-05:00</lastmod>
     </url>
 </urlset>

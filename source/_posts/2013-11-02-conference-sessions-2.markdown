@@ -14,13 +14,17 @@ $ git clone https://github.com/mheggeseth/ThatSessions.git
 $ git checkout -f [tag-name-for-step]
 ```
 
-[Last time](/blog/2013/10/13/conference-sessions-1/), we used jQuery, JSONP, and [OData](http://www.odata.org/) to load a list of conference sessions into some HTML [Bootstrap](http://getbootstrap.com/getting-started/) boilerplate. We got stuff to work, but it's not very pretty or useful yet so let's change that.
+[Last time](/blog/2013/10/13/conference-sessions-1/), we used [jQuery](http://jquery.com/), JSONP, and [OData](http://www.odata.org/) to load a list of conference sessions into some HTML [Bootstrap](http://getbootstrap.com/getting-started/) boilerplate. We got stuff to work, but it's not very pretty or useful yet so we're going to change that.
 
 {% img /images/posts/load-session-list.jpg %}
 
 ## Enter KnockoutJS
 
+Add the [KnockoutJS](http://knockoutjs.com) library.
 
+``` html
+<script type="text/javascript" src="js/knockout-2.3.0.js"></script>
+```
 
 
 ``` diff

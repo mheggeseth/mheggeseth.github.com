@@ -2,12 +2,13 @@
 	"folders":
 	[
 		{
-			"follow_symlinks": true,
 			"path": "source"
 		},
 		{
-			"follow_symlinks": true,
 			"path": "sass"
+		},
+		{
+			"path": "/C/Users/mheggeseth/Documents/GitHub/ThatSessions"
 		}
 	]
 }

@@ -28,7 +28,7 @@ Obviously, we'll add the [KnockoutJS](http://knockoutjs.com) library.
 <script type="text/javascript" src="js/knockout-2.3.0.js"></script>
 ```
 
-Next, we'll make a few simple changes to our JavaScript. First, we define a `viewModel` containing a single [observableArray]() to be a container for our sessions. Then we set the `sessions` observable to the array of sessions returned by the AJAX request.
+Next, we'll make a few simple changes to our JavaScript.
 
 ``` javascript
 var viewModel = {
@@ -44,17 +44,35 @@ $.ajax({
 });
 ```
 
-Notice that there is no longer any indication that we are dealing with the HTML or the DOM at this point.
+ First, we defined a `viewModel` object containing a single [observableArray](http://knockoutjs.com/documentation/observableArrays.html) to be a container for our sessions. Then we set the `sessions` observable to the array of sessions returned by the AJAX request.
 
-HTML changes
+Notice that our JavaScript has now lost any notion of dealing with HTML or the DOM. This is a good thing. A nice benefit of using Knockout's MVVM pattern is separating your data (the view model) from how the data is presented in HTML markup (the view). This allows the HTML to accurately describe, to a great extent, the behavior of the page. This is a distinct advantage over jQuery, whose behavior is generally defined in JavaScript and you are left to guess what role markup elements play based on context clues in their IDs or CSS class names. 
 
-Loading indicator.
+Let's update our HTML using Knockout's `data-bind` attribute to bind our session list to the page.
 
-Apply bindings
+``` html
+<div class="container">
+    <span data-bind="visible: !sessions().length">Loading sessions...</span>
+    <ul class="list-unstyled" data-bind="foreach: sessions">
+        <li data-bind="text: Title"></li>
+    </ul>
+</div>
+```
 
-Haven't changed the behavior of our page, but the addition of Knockout to manage our data and DOM interaction should make adding future behavior much easier. 
+The `foreach: sessions` binding tells Knockout to repeat the element's inner HTML for each object in the `sessions` array. The binding context of the inner HTML of `<ul data-bind="foreach: sessions">` then becomes the current element of `sessions`. So `<li data-bind="text: Title"></li>` will add a list item for each session whose value is the `Title` property of the session.
 
-Here's the complete diff for our latest set of changes.
+Notice that we added another element in there: `<span data-bind="visible: !sessions().length">Loading sessions...</span>`. Knockout's `visible` binding shows the current element if its value is truthy and hides it when its value is falsey. This allows us to easily provide a friendly loading message before sessions are loaded and then take it away once we've loaded at least one session.
+
+We forgot to do one thing, probably the most important thing. We need to tell Knockout to apply the bindings in the HTML to a view model. We add a call to `ko.applyBindings` to the end of our JavaScript after we've defined out view model. Without this, the `data-bind` attributes we added to the markup are about as useless as a white crayon.
+
+``` javascript
+//find KO binding declarations and associate them with target viewModel members
+ko.applyBindings(viewModel);
+```
+
+So this is all fine and good, but you've probably noticed that with the exception of the loading indicator, we haven't changed the look and feel of our page at all. However, the addition of Knockout to manage data and its application to the DOM should pay big dividends in the future. For one, because `sessions` is not just any array but an observable array, if we added or removed a session, Knockout would automatically update the view, a task that would have required significantly more code with our previous jQuery setup.
+
+For reference, here's the diff for our latest set of changes to `index.html`.
 
 ``` diff
      <div class="container">
@@ -91,3 +109,11 @@ Here's the complete diff for our latest set of changes.
      </script>
    </body>
 ```
+
+## Bootstrap Window Dressing
+
+Show some more data and add some style to it
+
+## Keeping it Tight
+
+Replace jQuery with Zepto

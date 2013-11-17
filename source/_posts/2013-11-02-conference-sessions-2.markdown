@@ -114,9 +114,21 @@ For reference, here's the diff for our latest set of changes to `index.html`.
 
     git checkout -f bootstrap-style
 
-So now that we have the beginnings of an application, let's make it look a little bit nicer.
+So now that we have the beginnings of an application, let's make it look a little bit nicer. First, we'll give the navigation bar fixed layout so that it stays at the top of the screen as we scroll. This is as easy as adding the `navbar-fixed-top` style to the `navbar` tag. Additionally, the Bootstrap requires us to add 70px of padding to the top of the `body` tag to facilitate the fixed navbar behavior.
 
-nav bar
+```html
+<head>
+...
+    <style type="text/css">
+        body { padding-top: 70px; }
+    </style>
+</head>
+<body>
+    ...
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">...</nav>
+    ...
+</body>
+```
 
 list group style
 

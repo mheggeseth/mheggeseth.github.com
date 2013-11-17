@@ -112,8 +112,63 @@ For reference, here's the diff for our latest set of changes to `index.html`.
 
 ## Bootstrap Window Dressing
 
-Show some more data and add some style to it
+    git checkout -f bootstrap-style
 
-## Keeping it Tight
+So now that we have the beginnings of an application, let's make it look a little bit nicer.
 
-Replace jQuery with Zepto
+nav bar
+
+list group style
+
+more data
+
+``` diff
+@@ -4,13 +4,15 @@
+     <title>That Conference / Sessions</title>
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <!-- Bootstrap -->
+-    <!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"> -->
+     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+-    <!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css"> -->
+     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
++    <style type="text/css">
++        /* Necessary for fixed header http://getbootstrap.com/components/#navbar-fixed-top */
++        body { padding-top: 70px; }
++    </style>
+   </head>
+   <body>
+-    <nav class="navbar navbar-inverse" role="navigation">
++    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+         <div class="navbar-header">
+             <a class="navbar-brand visible-xs" href="#">That / Sessions</a>
+             <a class="navbar-brand hidden-xs" href="#">That Conference / Sessions</a>
+@@ -18,17 +20,20 @@
+     </nav>
+ 
+     <div class="container">
+-        <span data-bind="visible: !sessions().length">Loading sessions...</span>
+-        <ul class="list-unstyled" data-bind="foreach: sessions">
+-            <li data-bind="text: Title"></li>
++        <div class="alert alert-info" data-bind="visible: !sessions().length">Loading sessions...</div>
++        <ul class="list-group" data-bind="foreach: sessions">
++            <li class="list-group-item">
++                <span class="label label-primary" data-bind="text: new moment(ScheduledDateTime).format('ddd M/D/YY h:mm a') + ' | ' + ScheduledRoom"></span>
++                <span class="label label-default" data-bind="text: Category + ' | ' + Level"></span>
++                <h4 class="list-group-item-heading" style="margin-top:5px" data-bind="text: Title"></h4>
++            </li>
+         </ul>
+     </div>
+ 
+-    <!--<script src="//code.jquery.com/jquery.js"></script>-->
+     <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+     <script type="text/javascript" src="js/knockout-2.3.0.js"></script>
+-    <!--<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>-->
+     <script type="text/javascript" src="js/bootstrap.min.js"></script>
++    <script type="text/javascript" src="js/moment.min.js"></script>
+     <script type="text/javascript">
+         var viewModel = {
+             sessions: ko.observableArray()
+```
+
+## Next Time: Functionality!
+

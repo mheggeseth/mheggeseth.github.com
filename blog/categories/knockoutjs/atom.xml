@@ -4,7 +4,7 @@
   <title><![CDATA[Category: knockoutjs | Just Enough To Be Dangerous]]></title>
   <link href="http://mheggeseth.github.io/blog/categories/knockoutjs/atom.xml" rel="self"/>
   <link href="http://mheggeseth.github.io/"/>
-  <updated>2013-11-17T20:06:38-06:00</updated>
+  <updated>2013-11-17T20:17:44-06:00</updated>
   <id>http://mheggeseth.github.io/</id>
   <author>
     <name><![CDATA[Michael Heggeseth]]></name>
@@ -12,6 +12,285 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ThatConference Session List 2: Knockout My Bootstrap!]]></title>
+    <link href="http://mheggeseth.github.io/blog/2013/11/17/conference-sessions-2/"/>
+    <updated>2013-11-17T13:42:00-06:00</updated>
+    <id>http://mheggeseth.github.io/blog/2013/11/17/conference-sessions-2</id>
+    <content type="html"><![CDATA[<p>``` bash</p>
+
+<h1>REMEMBER: follow along with these examples by cloning the</h1>
+
+<h1>repository and checking out the tag for each step</h1>
+
+<p>$ git clone <a href="https://github.com/mheggeseth/ThatSessions.git">https://github.com/mheggeseth/ThatSessions.git</a>
+$ git checkout -f [tag-name-for-step]
+```</p>
+
+<p><a href="/blog/2013/10/13/conference-sessions-1/">Last time</a>, we used <a href="http://jquery.com/">jQuery</a>, JSONP, and <a href="http://www.odata.org/">OData</a> to load a list of conference sessions into some HTML <a href="http://getbootstrap.com/getting-started/">Bootstrap</a> boilerplate. We got loading to work, but our page isn&rsquo;t very pretty or useful yet so we&rsquo;re going to fix that (at least part way).</p>
+
+<p><img src="/images/posts/load-session-list.jpg"></p>
+
+<h2>Enter KnockoutJS</h2>
+
+<pre><code>git checkout -f knockoutjs
+</code></pre>
+
+<p>Obviously, we&rsquo;ll add the <a href="http://knockoutjs.com">KnockoutJS</a> library.</p>
+
+<p>``` html</p>
+
+<script type="text/javascript" src="js/knockout-2.3.0.js"></script>
+
+
+<p>```</p>
+
+<p>Next, we&rsquo;ll make a few simple changes to our JavaScript.</p>
+
+<p>``` javascript
+var viewModel = {</p>
+
+<pre><code>sessions: ko.observableArray()
+</code></pre>
+
+<p>};</p>
+
+<p>$.ajax({</p>
+
+<pre><code>url: "http://www.thatconference.com/odata/api.svc/Sessions?$format=json&amp;$callback=?",
+dataType: "jsonp",
+success: function (data) {
+    viewModel.sessions(data.d);
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<p> First, we defined a <code>viewModel</code> object containing a single <a href="http://knockoutjs.com/documentation/observableArrays.html">observableArray</a> to be a container for our sessions. Then we set the <code>sessions</code> observable to the array of sessions returned by the AJAX request.</p>
+
+<p>Notice that our JavaScript has now lost any notion of HTML or the DOM. This is a good thing. A nice benefit of using Knockout&rsquo;s MVVM pattern is separating your data (the view model) from how the data is presented in HTML markup (the view). This allows the HTML to accurately describe, to a great extent, the behavior of the page. This is a distinct advantage over jQuery, whose behavior is generally defined in JavaScript and you are left to guess what role markup elements play based on context clues in their IDs or CSS class names.</p>
+
+<p>Let&rsquo;s update our HTML using Knockout&rsquo;s <code>data-bind</code> attribute to bind our session list to the page.</p>
+
+<p>``` html</p>
+
+<div class="container">
+    <span data-bind="visible: !sessions().length">Loading sessions...</span>
+    <ul class="list-unstyled" data-bind="foreach: sessions">
+        <li data-bind="text: Title"></li>
+    </ul>
+</div>
+
+
+<p>```</p>
+
+<p>The <code>foreach: sessions</code> binding tells Knockout to repeat the element&rsquo;s inner HTML for each object in the <code>sessions</code> array. The binding context of the inner HTML of <code>&lt;ul data-bind="foreach: sessions"&gt;</code> then becomes the current element of <code>sessions</code>. So <code>&lt;li data-bind="text: Title"&gt;&lt;/li&gt;</code> will add a list item for each session whose value is the <code>Title</code> property of the session.</p>
+
+<p>Notice that we added another element in there: <code>&lt;span data-bind="visible: !sessions().length"&gt;Loading sessions...&lt;/span&gt;</code>. Knockout&rsquo;s <code>visible</code> binding shows the current element if its value is truthy and hides it when its value is falsey. This allows us to easily provide a friendly loading message before sessions are loaded and then take it away once we&rsquo;ve loaded at least one session.</p>
+
+<p>We forgot to do one thing, probably the most important thing. We need to tell Knockout to apply the bindings in the HTML to a view model. We add a call to <code>ko.applyBindings</code> to the end of our JavaScript after we&rsquo;ve defined our view model. Without this, the <code>data-bind</code> attributes we added to the markup are about as useless as a white crayon.</p>
+
+<p><code>javascript
+//find KO binding declarations and associate them with target viewModel members
+ko.applyBindings(viewModel);
+</code></p>
+
+<p>So this is all fine and good, but you&rsquo;ve probably noticed that with the exception of the loading indicator, we haven&rsquo;t changed the look and feel of our page at all. However, the addition of Knockout to manage data and its application to the DOM should pay big dividends in the future. For one, because <code>sessions</code> is not just any array but an observable array, if we added or removed a session, Knockout would automatically update the view: a task that would have required significantly more code with our previous jQuery setup.</p>
+
+<p>For reference, here&rsquo;s the diff for our latest set of changes to <code>index.html</code>.</p>
+
+<p>``` diff</p>
+
+<pre><code> &lt;div class="container"&gt;
+</code></pre>
+
+<ul>
+<li><pre><code> &lt;ul id="sessionList" class="list-unstyled"&gt;&lt;/ul&gt;
+</code></pre></li>
+<li><pre><code> &lt;span data-bind="visible: !sessions().length"&gt;Loading sessions...&lt;/span&gt;
+</code></pre></li>
+<li><pre><code> &lt;ul class="list-unstyled" data-bind="foreach: sessions"&gt;
+</code></pre></li>
+<li><pre><code>     &lt;li data-bind="text: Title"&gt;&lt;/li&gt;
+</code></pre></li>
+<li><pre><code> &lt;/ul&gt;
+</code></pre>
+
+<p> </div></p>
+
+<p> <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script></p></li>
+<li> <script type="text/javascript" src="js/knockout-2.3.0.js"></script>
+ <script type="text/javascript" src="js/bootstrap.min.js"></script>
+ <script type="text/javascript"></li>
+<li><pre><code> var viewModel = {
+</code></pre></li>
+<li><pre><code>     sessions: ko.observableArray()
+</code></pre></li>
+<li><pre><code> };
+</code></pre>
+
+<p>+
+     $.ajax({
+         url: &ldquo;<a href="http://www.thatconference.com/odata/api.svc/Sessions?$format=json&amp;$callback=?">http://www.thatconference.com/odata/api.svc/Sessions?$format=json&amp;$callback=?</a>&rdquo;,
+         dataType: &ldquo;jsonp&rdquo;,
+         success: function (data) {</p></li>
+<li><pre><code>         var sessions = data.d;
+</code></pre></li>
+<li><pre><code>         var $sessionList = $("#sessionList");
+</code></pre></li>
+<li><pre><code>         $.each(sessions, function(index, session) {
+</code></pre></li>
+<li><pre><code>             $("&lt;li&gt;&lt;/li&gt;").text(session.Title).appendTo($sessionList);
+</code></pre></li>
+<li><pre><code>         });
+</code></pre></li>
+<li><pre><code>         viewModel.sessions(data.d);
+     }
+ });
+</code></pre>
+
+<p>+</p></li>
+<li><pre><code> //find KO binding declarations and associate them with target viewModel members
+</code></pre></li>
+<li><pre><code> ko.applyBindings(viewModel);
+</code></pre>
+
+<p> </script>
+</body>
+```</p></li>
+</ul>
+
+
+<h2>Bootstrap Window Dressing</h2>
+
+<pre><code>git checkout -f bootstrap-style
+</code></pre>
+
+<p>So now that we have the beginnings of an application, let&rsquo;s use Bootstrap to make it look a little bit nicer. First, we&rsquo;ll give the navigation bar fixed layout so that it stays at the top of the screen as we scroll. This is as easy as adding the <code>navbar-fixed-top</code> style to the <code>navbar</code> tag. Bootstrap requires us to add 70px of padding to the top of the <code>body</code> tag to facilitate the fixed navbar behavior so we&rsquo;ll do that too.</p>
+
+<p>```html
+<head>
+&hellip;</p>
+
+<pre><code>&lt;style type="text/css"&gt;
+    body { padding-top: 70px; }
+&lt;/style&gt;
+</code></pre>
+
+<p></head>
+<body></p>
+
+<pre><code>...
+&lt;nav class="navbar navbar-inverse navbar-fixed-top" role="navigation"&gt;...&lt;/nav&gt;
+...
+</code></pre>
+
+<p></body>
+```</p>
+
+<p>Now, let&rsquo;s add some style to our list. First, we&rsquo;ll give our loading indicator a little flare by adding the <a href="http://getbootstrap.com/components/#alerts">alert</a> style (in a non-threatening way).</p>
+
+<p>``` html</p>
+
+<div class="alert alert-info" data-bind="visible: !sessions().length">Loading sessions...</div>
+
+
+<p>```</p>
+
+<p><img src="/images/posts/loading-indicator.png"></p>
+
+<p>Then we&rsquo;ll turn our list into a <a href="http://getbootstrap.com/components/#list-group">list group</a> and use <a href="http://getbootstrap.com/components/#labels">labels</a> to highlight some useful information about the session like scheduled time (with a little help from <a href="http://momentjs.com">Moment.js</a>), location, category, and level.</p>
+
+<p>``` html</p>
+
+<ul class="list-group" data-bind="foreach: sessions">
+    <li class="list-group-item">
+        <span class="label label-primary" data-bind="text: new moment(ScheduledDateTime).format('ddd M/D/YY h:mm a') + ' | ' + ScheduledRoom"></span>
+        <span class="label label-default" data-bind="text: Category + ' | ' + Level"></span>
+        <h4 class="list-group-item-heading" style="margin-top:5px" data-bind="text: Title"></h4>
+    </li>
+</ul>
+
+
+<p>```</p>
+
+<p><img src="/images/posts/styled-list.png"></p>
+
+<p>Here are all the changes we just made:</p>
+
+<p>``` diff
+@@ -4,13 +4,15 @@</p>
+
+<pre><code> &lt;title&gt;That Conference / Sessions&lt;/title&gt;
+ &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+ &lt;!-- Bootstrap --&gt;
+</code></pre>
+
+<ul>
+<li> <!-- <link rel="stylesheet" href="http://mheggeseth.github.io//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"> &mdash;>
+ <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"></li>
+<li> <!-- <link rel="stylesheet" href="http://mheggeseth.github.io//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css"> &mdash;>
+ <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css"></li>
+<li> <style type="text/css"></li>
+<li><pre><code> /* Necessary for fixed header http://getbootstrap.com/components/#navbar-fixed-top */
+</code></pre></li>
+<li><pre><code> body { padding-top: 70px; }
+</code></pre></li>
+<li> </style>
+</head>
+<body></li>
+<li> <nav class="navbar navbar-inverse" role="navigation"></li>
+<li><p> <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+     <div class="navbar-header">
+         <a class="navbar-brand visible-xs" href="#">That / Sessions</a>
+         <a class="navbar-brand hidden-xs" href="#">That Conference / Sessions</a>
+@@ -18,17 +20,20 @@
+ </nav></p>
+
+<p> <div class="container"></p></li>
+<li><pre><code> &lt;span data-bind="visible: !sessions().length"&gt;Loading sessions...&lt;/span&gt;
+</code></pre></li>
+<li><pre><code> &lt;ul class="list-unstyled" data-bind="foreach: sessions"&gt;
+</code></pre></li>
+<li><pre><code>     &lt;li data-bind="text: Title"&gt;&lt;/li&gt;
+</code></pre></li>
+<li><pre><code> &lt;div class="alert alert-info" data-bind="visible: !sessions().length"&gt;Loading sessions...&lt;/div&gt;
+</code></pre></li>
+<li><pre><code> &lt;ul class="list-group" data-bind="foreach: sessions"&gt;
+</code></pre></li>
+<li><pre><code>     &lt;li class="list-group-item"&gt;
+</code></pre></li>
+<li><pre><code>         &lt;span class="label label-primary" data-bind="text: new moment(ScheduledDateTime).format('ddd M/D/YY h:mm a') + ' | ' + ScheduledRoom"&gt;&lt;/span&gt;
+</code></pre></li>
+<li><pre><code>         &lt;span class="label label-default" data-bind="text: Category + ' | ' + Level"&gt;&lt;/span&gt;
+</code></pre></li>
+<li><pre><code>         &lt;h4 class="list-group-item-heading" style="margin-top:5px" data-bind="text: Title"&gt;&lt;/h4&gt;
+</code></pre></li>
+<li><pre><code>     &lt;/li&gt;
+ &lt;/ul&gt;
+</code></pre>
+
+<p> </div></p></li>
+<li><p> <!--<script src="http://mheggeseth.github.io//code.jquery.com/jquery.js"></script>&mdash;>
+ <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+ <script type="text/javascript" src="js/knockout-2.3.0.js"></script></p></li>
+<li> <!--<script src="http://mheggeseth.github.io//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>&mdash;>
+ <script type="text/javascript" src="js/bootstrap.min.js"></script></li>
+<li> <script type="text/javascript" src="js/moment.min.js"></script>
+ <script type="text/javascript">
+     var viewModel = {
+         sessions: ko.observableArray()
+```</li>
+</ul>
+
+
+<h2>Next Time: Making it Useful</h2>
+
+<p>So now that we have a session list that&rsquo;s marginally pretty and functional, we should probably make it useful too. Next time, we&rsquo;ll organize the sessions in a relevant way and make it easy to track favorites.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[AngularJS-ish filters in KnockoutJS]]></title>

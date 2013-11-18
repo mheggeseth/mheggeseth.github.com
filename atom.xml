@@ -4,7 +4,7 @@
   <title><![CDATA[Just Enough To Be Dangerous]]></title>
   <link href="http://mheggeseth.github.io/atom.xml" rel="self"/>
   <link href="http://mheggeseth.github.io/"/>
-  <updated>2013-11-17T20:06:38-06:00</updated>
+  <updated>2013-11-17T20:17:44-06:00</updated>
   <id>http://mheggeseth.github.io/</id>
   <author>
     <name><![CDATA[Michael Heggeseth]]></name>
@@ -12,6 +12,335 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ThatConference Session List 2: Knockout My Bootstrap!]]></title>
+    <link href="http://mheggeseth.github.io/blog/2013/11/17/conference-sessions-2/"/>
+    <updated>2013-11-17T13:42:00-06:00</updated>
+    <id>http://mheggeseth.github.io/blog/2013/11/17/conference-sessions-2</id>
+    <content type="html"><![CDATA[<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># REMEMBER: follow along with these examples by cloning the</span>
+</span><span class='line'><span class="c">#   repository and checking out the tag for each step</span>
+</span><span class='line'><span class="nv">$ </span>git clone https://github.com/mheggeseth/ThatSessions.git
+</span><span class='line'><span class="nv">$ </span>git checkout -f <span class="o">[</span>tag-name-for-step<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="http://mheggeseth.github.io/blog/2013/10/13/conference-sessions-1/">Last time</a>, we used <a href="http://jquery.com/">jQuery</a>, JSONP, and <a href="http://www.odata.org/">OData</a> to load a list of conference sessions into some HTML <a href="http://getbootstrap.com/getting-started/">Bootstrap</a> boilerplate. We got loading to work, but our page isn&rsquo;t very pretty or useful yet so we&rsquo;re going to fix that (at least part way).</p>
+
+<p><img src="http://mheggeseth.github.io/images/posts/load-session-list.jpg"></p>
+
+<h2>Enter KnockoutJS</h2>
+
+<pre><code>git checkout -f knockoutjs
+</code></pre>
+
+<p>Obviously, we&rsquo;ll add the <a href="http://knockoutjs.com">KnockoutJS</a> library.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;js/knockout-2.3.0.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next, we&rsquo;ll make a few simple changes to our JavaScript.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">viewModel</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">sessions</span><span class="o">:</span> <span class="nx">ko</span><span class="p">.</span><span class="nx">observableArray</span><span class="p">()</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">url</span><span class="o">:</span> <span class="s2">&quot;http://www.thatconference.com/odata/api.svc/Sessions?$format=json&amp;$callback=?&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">dataType</span><span class="o">:</span> <span class="s2">&quot;jsonp&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">viewModel</span><span class="p">.</span><span class="nx">sessions</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">d</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> First, we defined a <code>viewModel</code> object containing a single <a href="http://knockoutjs.com/documentation/observableArrays.html">observableArray</a> to be a container for our sessions. Then we set the <code>sessions</code> observable to the array of sessions returned by the AJAX request.</p>
+
+<p>Notice that our JavaScript has now lost any notion of HTML or the DOM. This is a good thing. A nice benefit of using Knockout&rsquo;s MVVM pattern is separating your data (the view model) from how the data is presented in HTML markup (the view). This allows the HTML to accurately describe, to a great extent, the behavior of the page. This is a distinct advantage over jQuery, whose behavior is generally defined in JavaScript and you are left to guess what role markup elements play based on context clues in their IDs or CSS class names.</p>
+
+<p>Let&rsquo;s update our HTML using Knockout&rsquo;s <code>data-bind</code> attribute to bind our session list to the page.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;span</span> <span class="na">data-bind=</span><span class="s">&quot;visible: !sessions().length&quot;</span><span class="nt">&gt;</span>Loading sessions...<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">&quot;list-unstyled&quot;</span> <span class="na">data-bind=</span><span class="s">&quot;foreach: sessions&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;li</span> <span class="na">data-bind=</span><span class="s">&quot;text: Title&quot;</span><span class="nt">&gt;&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>foreach: sessions</code> binding tells Knockout to repeat the element&rsquo;s inner HTML for each object in the <code>sessions</code> array. The binding context of the inner HTML of <code>&lt;ul data-bind="foreach: sessions"&gt;</code> then becomes the current element of <code>sessions</code>. So <code>&lt;li data-bind="text: Title"&gt;&lt;/li&gt;</code> will add a list item for each session whose value is the <code>Title</code> property of the session.</p>
+
+<p>Notice that we added another element in there: <code>&lt;span data-bind="visible: !sessions().length"&gt;Loading sessions...&lt;/span&gt;</code>. Knockout&rsquo;s <code>visible</code> binding shows the current element if its value is truthy and hides it when its value is falsey. This allows us to easily provide a friendly loading message before sessions are loaded and then take it away once we&rsquo;ve loaded at least one session.</p>
+
+<p>We forgot to do one thing, probably the most important thing. We need to tell Knockout to apply the bindings in the HTML to a view model. We add a call to <code>ko.applyBindings</code> to the end of our JavaScript after we&rsquo;ve defined our view model. Without this, the <code>data-bind</code> attributes we added to the markup are about as useless as a white crayon.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//find KO binding declarations and associate them with target viewModel members</span>
+</span><span class='line'><span class="nx">ko</span><span class="p">.</span><span class="nx">applyBindings</span><span class="p">(</span><span class="nx">viewModel</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So this is all fine and good, but you&rsquo;ve probably noticed that with the exception of the loading indicator, we haven&rsquo;t changed the look and feel of our page at all. However, the addition of Knockout to manage data and its application to the DOM should pay big dividends in the future. For one, because <code>sessions</code> is not just any array but an observable array, if we added or removed a session, Knockout would automatically update the view: a task that would have required significantly more code with our previous jQuery setup.</p>
+
+<p>For reference, here&rsquo;s the diff for our latest set of changes to <code>index.html</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='diff'><span class='line'> &lt;div class=&quot;container&quot;&gt;
+</span><span class='line'><span class="gd">-        &lt;ul id=&quot;sessionList&quot; class=&quot;list-unstyled&quot;&gt;&lt;/ul&gt;</span>
+</span><span class='line'><span class="gi">+        &lt;span data-bind=&quot;visible: !sessions().length&quot;&gt;Loading sessions...&lt;/span&gt;</span>
+</span><span class='line'><span class="gi">+        &lt;ul class=&quot;list-unstyled&quot; data-bind=&quot;foreach: sessions&quot;&gt;</span>
+</span><span class='line'><span class="gi">+            &lt;li data-bind=&quot;text: Title&quot;&gt;&lt;/li&gt;</span>
+</span><span class='line'><span class="gi">+        &lt;/ul&gt;</span>
+</span><span class='line'> &lt;/div&gt;
+</span><span class='line'>
+</span><span class='line'> &lt;script type=&quot;text/javascript&quot; src=&quot;js/jquery-1.10.2.min.js&quot;&gt;&lt;/script&gt;
+</span><span class='line'><span class="gi">+    &lt;script type=&quot;text/javascript&quot; src=&quot;js/knockout-2.3.0.js&quot;&gt;&lt;/script&gt;</span>
+</span><span class='line'> &lt;script type=&quot;text/javascript&quot; src=&quot;js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+</span><span class='line'> &lt;script type=&quot;text/javascript&quot;&gt;
+</span><span class='line'><span class="gi">+        var viewModel = {</span>
+</span><span class='line'><span class="gi">+            sessions: ko.observableArray()</span>
+</span><span class='line'><span class="gi">+        };</span>
+</span><span class='line'><span class="gi">+</span>
+</span><span class='line'>     $.ajax({
+</span><span class='line'>         url: &quot;http://www.thatconference.com/odata/api.svc/Sessions?$format=json&amp;$callback=?&quot;,
+</span><span class='line'>         dataType: &quot;jsonp&quot;,
+</span><span class='line'>         success: function (data) {
+</span><span class='line'><span class="gd">-                var sessions = data.d;</span>
+</span><span class='line'><span class="gd">-                var $sessionList = $(&quot;#sessionList&quot;);</span>
+</span><span class='line'><span class="gd">-                $.each(sessions, function(index, session) {</span>
+</span><span class='line'><span class="gd">-                    $(&quot;&lt;li&gt;&lt;/li&gt;&quot;).text(session.Title).appendTo($sessionList);</span>
+</span><span class='line'><span class="gd">-                });</span>
+</span><span class='line'><span class="gi">+                viewModel.sessions(data.d);</span>
+</span><span class='line'>         }
+</span><span class='line'>     });
+</span><span class='line'><span class="gi">+</span>
+</span><span class='line'><span class="gi">+        //find KO binding declarations and associate them with target viewModel members</span>
+</span><span class='line'><span class="gi">+        ko.applyBindings(viewModel);</span>
+</span><span class='line'> &lt;/script&gt;
+</span><span class='line'>   &lt;/body&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Bootstrap Window Dressing</h2>
+
+<pre><code>git checkout -f bootstrap-style
+</code></pre>
+
+<p>So now that we have the beginnings of an application, let&rsquo;s use Bootstrap to make it look a little bit nicer. First, we&rsquo;ll give the navigation bar fixed layout so that it stays at the top of the screen as we scroll. This is as easy as adding the <code>navbar-fixed-top</code> style to the <code>navbar</code> tag. Bootstrap requires us to add 70px of padding to the top of the <code>body</code> tag to facilitate the fixed navbar behavior so we&rsquo;ll do that too.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>...
+</span><span class='line'>    <span class="nt">&lt;style </span><span class="na">type=</span><span class="s">&quot;text/css&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">body</span> <span class="p">{</span> <span class="k">padding-top</span><span class="o">:</span> <span class="m">70px</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="nt">&lt;/style&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    ...
+</span><span class='line'>    <span class="nt">&lt;nav</span> <span class="na">class=</span><span class="s">&quot;navbar navbar-inverse navbar-fixed-top&quot;</span> <span class="na">role=</span><span class="s">&quot;navigation&quot;</span><span class="nt">&gt;</span>...<span class="nt">&lt;/nav&gt;</span>
+</span><span class='line'>    ...
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, let&rsquo;s add some style to our list. First, we&rsquo;ll give our loading indicator a little flare by adding the <a href="http://getbootstrap.com/components/#alerts">alert</a> style (in a non-threatening way).</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;alert alert-info&quot;</span> <span class="na">data-bind=</span><span class="s">&quot;visible: !sessions().length&quot;</span><span class="nt">&gt;</span>Loading sessions...<span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://mheggeseth.github.io/images/posts/loading-indicator.png"></p>
+
+<p>Then we&rsquo;ll turn our list into a <a href="http://getbootstrap.com/components/#list-group">list group</a> and use <a href="http://getbootstrap.com/components/#labels">labels</a> to highlight some useful information about the session like scheduled time (with a little help from <a href="http://momentjs.com">Moment.js</a>), location, category, and level.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">&quot;list-group&quot;</span> <span class="na">data-bind=</span><span class="s">&quot;foreach: sessions&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">&quot;list-group-item&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;label label-primary&quot;</span> <span class="na">data-bind=</span><span class="s">&quot;text: new moment(ScheduledDateTime).format(&#39;ddd M/D/YY h:mm a&#39;) + &#39; | &#39; + ScheduledRoom&quot;</span><span class="nt">&gt;&lt;/span&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;label label-default&quot;</span> <span class="na">data-bind=</span><span class="s">&quot;text: Category + &#39; | &#39; + Level&quot;</span><span class="nt">&gt;&lt;/span&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;h4</span> <span class="na">class=</span><span class="s">&quot;list-group-item-heading&quot;</span> <span class="na">style=</span><span class="s">&quot;margin-top:5px&quot;</span> <span class="na">data-bind=</span><span class="s">&quot;text: Title&quot;</span><span class="nt">&gt;&lt;/h4&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;/ul&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://mheggeseth.github.io/images/posts/styled-list.png"></p>
+
+<p>Here are all the changes we just made:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='diff'><span class='line'><span class="gu">@@ -4,13 +4,15 @@</span>
+</span><span class='line'>     &lt;title&gt;That Conference / Sessions&lt;/title&gt;
+</span><span class='line'>     &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+</span><span class='line'>     &lt;!-- Bootstrap --&gt;
+</span><span class='line'><span class="gd">-    &lt;!-- &lt;link rel=&quot;stylesheet&quot; href=&quot;//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css&quot;&gt; --&gt;</span>
+</span><span class='line'>     &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;css/bootstrap.min.css&quot;&gt;
+</span><span class='line'><span class="gd">-    &lt;!-- &lt;link rel=&quot;stylesheet&quot; href=&quot;//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css&quot;&gt; --&gt;</span>
+</span><span class='line'>     &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;css/bootstrap-theme.min.css&quot;&gt;
+</span><span class='line'><span class="gi">+    &lt;style type=&quot;text/css&quot;&gt;</span>
+</span><span class='line'><span class="gi">+        /* Necessary for fixed header http://getbootstrap.com/components/#navbar-fixed-top */</span>
+</span><span class='line'><span class="gi">+        body { padding-top: 70px; }</span>
+</span><span class='line'><span class="gi">+    &lt;/style&gt;</span>
+</span><span class='line'>   &lt;/head&gt;
+</span><span class='line'>   &lt;body&gt;
+</span><span class='line'><span class="gd">-    &lt;nav class=&quot;navbar navbar-inverse&quot; role=&quot;navigation&quot;&gt;</span>
+</span><span class='line'><span class="gi">+    &lt;nav class=&quot;navbar navbar-inverse navbar-fixed-top&quot; role=&quot;navigation&quot;&gt;</span>
+</span><span class='line'>         &lt;div class=&quot;navbar-header&quot;&gt;
+</span><span class='line'>             &lt;a class=&quot;navbar-brand visible-xs&quot; href=&quot;#&quot;&gt;That / Sessions&lt;/a&gt;
+</span><span class='line'>             &lt;a class=&quot;navbar-brand hidden-xs&quot; href=&quot;#&quot;&gt;That Conference / Sessions&lt;/a&gt;
+</span><span class='line'><span class="gu">@@ -18,17 +20,20 @@</span>
+</span><span class='line'>     &lt;/nav&gt;
+</span><span class='line'>
+</span><span class='line'>     &lt;div class=&quot;container&quot;&gt;
+</span><span class='line'><span class="gd">-        &lt;span data-bind=&quot;visible: !sessions().length&quot;&gt;Loading sessions...&lt;/span&gt;</span>
+</span><span class='line'><span class="gd">-        &lt;ul class=&quot;list-unstyled&quot; data-bind=&quot;foreach: sessions&quot;&gt;</span>
+</span><span class='line'><span class="gd">-            &lt;li data-bind=&quot;text: Title&quot;&gt;&lt;/li&gt;</span>
+</span><span class='line'><span class="gi">+        &lt;div class=&quot;alert alert-info&quot; data-bind=&quot;visible: !sessions().length&quot;&gt;Loading sessions...&lt;/div&gt;</span>
+</span><span class='line'><span class="gi">+        &lt;ul class=&quot;list-group&quot; data-bind=&quot;foreach: sessions&quot;&gt;</span>
+</span><span class='line'><span class="gi">+            &lt;li class=&quot;list-group-item&quot;&gt;</span>
+</span><span class='line'><span class="gi">+                &lt;span class=&quot;label label-primary&quot; data-bind=&quot;text: new moment(ScheduledDateTime).format(&#39;ddd M/D/YY h:mm a&#39;) + &#39; | &#39; + ScheduledRoom&quot;&gt;&lt;/span&gt;</span>
+</span><span class='line'><span class="gi">+                &lt;span class=&quot;label label-default&quot; data-bind=&quot;text: Category + &#39; | &#39; + Level&quot;&gt;&lt;/span&gt;</span>
+</span><span class='line'><span class="gi">+                &lt;h4 class=&quot;list-group-item-heading&quot; style=&quot;margin-top:5px&quot; data-bind=&quot;text: Title&quot;&gt;&lt;/h4&gt;</span>
+</span><span class='line'><span class="gi">+            &lt;/li&gt;</span>
+</span><span class='line'>         &lt;/ul&gt;
+</span><span class='line'>     &lt;/div&gt;
+</span><span class='line'>
+</span><span class='line'><span class="gd">-    &lt;!--&lt;script src=&quot;//code.jquery.com/jquery.js&quot;&gt;&lt;/script&gt;--&gt;</span>
+</span><span class='line'>     &lt;script type=&quot;text/javascript&quot; src=&quot;js/jquery-1.10.2.min.js&quot;&gt;&lt;/script&gt;
+</span><span class='line'>     &lt;script type=&quot;text/javascript&quot; src=&quot;js/knockout-2.3.0.js&quot;&gt;&lt;/script&gt;
+</span><span class='line'><span class="gd">-    &lt;!--&lt;script src=&quot;//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;--&gt;</span>
+</span><span class='line'>     &lt;script type=&quot;text/javascript&quot; src=&quot;js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+</span><span class='line'><span class="gi">+    &lt;script type=&quot;text/javascript&quot; src=&quot;js/moment.min.js&quot;&gt;&lt;/script&gt;</span>
+</span><span class='line'>     &lt;script type=&quot;text/javascript&quot;&gt;
+</span><span class='line'>         var viewModel = {
+</span><span class='line'>             sessions: ko.observableArray()
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Next Time: Making it Useful</h2>
+
+<p>So now that we have a session list that&rsquo;s marginally pretty and functional, we should probably make it useful too. Next time, we&rsquo;ll organize the sessions in a relevant way and make it easy to track favorites.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[A Simple, Responsive Conference Session List: Part 1]]></title>

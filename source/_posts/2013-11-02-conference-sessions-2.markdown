@@ -46,7 +46,7 @@ $.ajax({
 
  First, we defined a `viewModel` object containing a single [observableArray](http://knockoutjs.com/documentation/observableArrays.html) to be a container for our sessions. Then we set the `sessions` observable to the array of sessions returned by the AJAX request.
 
-Notice that our JavaScript has now lost any notion of dealing with HTML or the DOM. This is a good thing. A nice benefit of using Knockout's MVVM pattern is separating your data (the view model) from how the data is presented in HTML markup (the view). This allows the HTML to accurately describe, to a great extent, the behavior of the page. This is a distinct advantage over jQuery, whose behavior is generally defined in JavaScript and you are left to guess what role markup elements play based on context clues in their IDs or CSS class names. 
+Notice that our JavaScript has now lost any notion of HTML or the DOM. This is a good thing. A nice benefit of using Knockout's MVVM pattern is separating your data (the view model) from how the data is presented in HTML markup (the view). This allows the HTML to accurately describe, to a great extent, the behavior of the page. This is a distinct advantage over jQuery, whose behavior is generally defined in JavaScript and you are left to guess what role markup elements play based on context clues in their IDs or CSS class names. 
 
 Let's update our HTML using Knockout's `data-bind` attribute to bind our session list to the page.
 
@@ -63,14 +63,14 @@ The `foreach: sessions` binding tells Knockout to repeat the element's inner HTM
 
 Notice that we added another element in there: `<span data-bind="visible: !sessions().length">Loading sessions...</span>`. Knockout's `visible` binding shows the current element if its value is truthy and hides it when its value is falsey. This allows us to easily provide a friendly loading message before sessions are loaded and then take it away once we've loaded at least one session.
 
-We forgot to do one thing, probably the most important thing. We need to tell Knockout to apply the bindings in the HTML to a view model. We add a call to `ko.applyBindings` to the end of our JavaScript after we've defined out view model. Without this, the `data-bind` attributes we added to the markup are about as useless as a white crayon.
+We forgot to do one thing, probably the most important thing. We need to tell Knockout to apply the bindings in the HTML to a view model. We add a call to `ko.applyBindings` to the end of our JavaScript after we've defined our view model. Without this, the `data-bind` attributes we added to the markup are about as useless as a white crayon.
 
 ``` javascript
 //find KO binding declarations and associate them with target viewModel members
 ko.applyBindings(viewModel);
 ```
 
-So this is all fine and good, but you've probably noticed that with the exception of the loading indicator, we haven't changed the look and feel of our page at all. However, the addition of Knockout to manage data and its application to the DOM should pay big dividends in the future. For one, because `sessions` is not just any array but an observable array, if we added or removed a session, Knockout would automatically update the view, a task that would have required significantly more code with our previous jQuery setup.
+So this is all fine and good, but you've probably noticed that with the exception of the loading indicator, we haven't changed the look and feel of our page at all. However, the addition of Knockout to manage data and its application to the DOM should pay big dividends in the future. For one, because `sessions` is not just any array but an observable array, if we added or removed a session, Knockout would automatically update the view: a task that would have required significantly more code with our previous jQuery setup.
 
 For reference, here's the diff for our latest set of changes to `index.html`.
 
@@ -114,7 +114,7 @@ For reference, here's the diff for our latest set of changes to `index.html`.
 
     git checkout -f bootstrap-style
 
-So now that we have the beginnings of an application, let's make it look a little bit nicer. First, we'll give the navigation bar fixed layout so that it stays at the top of the screen as we scroll. This is as easy as adding the `navbar-fixed-top` style to the `navbar` tag. Additionally, the Bootstrap requires us to add 70px of padding to the top of the `body` tag to facilitate the fixed navbar behavior.
+So now that we have the beginnings of an application, let's use Bootstrap to make it look a little bit nicer. First, we'll give the navigation bar fixed layout so that it stays at the top of the screen as we scroll. This is as easy as adding the `navbar-fixed-top` style to the `navbar` tag. Bootstrap requires us to add 70px of padding to the top of the `body` tag to facilitate the fixed navbar behavior so we'll do that too.
 
 ```html
 <head>
@@ -130,9 +130,29 @@ So now that we have the beginnings of an application, let's make it look a littl
 </body>
 ```
 
-list group style
+Now, let's add some style to our list. First, we'll give our loading indicator a little flare by adding the [alert](http://getbootstrap.com/components/#alerts) style (in a non-threatening way).
 
-more data
+``` html
+<div class="alert alert-info" data-bind="visible: !sessions().length">Loading sessions...</div>
+```
+
+{% img /images/posts/loading-indicator.png %}
+
+Then we'll turn our list into a [list group](http://getbootstrap.com/components/#list-group) and use [labels](http://getbootstrap.com/components/#labels) to highlight some useful information about the session like scheduled time (with a little help from [Moment.js](http://momentjs.com)), location, category, and level.
+
+``` html
+<ul class="list-group" data-bind="foreach: sessions">
+    <li class="list-group-item">
+        <span class="label label-primary" data-bind="text: new moment(ScheduledDateTime).format('ddd M/D/YY h:mm a') + ' | ' + ScheduledRoom"></span>
+        <span class="label label-default" data-bind="text: Category + ' | ' + Level"></span>
+        <h4 class="list-group-item-heading" style="margin-top:5px" data-bind="text: Title"></h4>
+    </li>
+</ul>
+```
+
+{% img /images/posts/styled-list.png %}
+
+Here are all the changes we just made:
 
 ``` diff
 @@ -4,13 +4,15 @@
@@ -182,5 +202,7 @@ more data
              sessions: ko.observableArray()
 ```
 
-## Next Time: Functionality!
+## Next Time: Making it Useful
+
+So now that we have a session list that's marginally pretty and functional, we should probably make it useful too. Next time, we'll organize the sessions in a relevant way and make it easy to track favorites.
 

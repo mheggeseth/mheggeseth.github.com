@@ -1,10 +1,9 @@
 ---
 layout: post
 title: "ThatConference Session List 2: Knockout My Bootstrap!"
-date: 2013-11-02 13:42
+date: 2013-11-17 13:42
 comments: true
 categories: knockoutjs bootstrap
-published: false
 ---
 
 ``` bash

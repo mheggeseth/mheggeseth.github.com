@@ -16,3 +16,7 @@ $ git checkout -f [tag-name-for-step]
 
 In our [last adventure](/blog/2013/11/17/conference-sessions-2/), we spiffed up our exterior with some [Bootstrap](http://getbootstrap.com/components/) style and reinforced our undercarriage with [KnockoutJS](http://knockoutjs.com).
 
+TODO: 
+- Talk about major performance difference between adding one session at a time when loaded and adding them all at once.
+- Make toggle and select observable fns
+
